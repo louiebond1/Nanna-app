@@ -143,3 +143,9 @@ button.ccard { cursor: pointer; }
 .word-entry { font-size: var(--text-huge); font-weight: 800; letter-spacing: 0.15em; min-height: 3rem; text-align: center; }
 .word-list { columns: 2; padding-left: 1.2rem; }
 @media (min-width: 40rem) { .word-list { columns: 3; } }
+
+/* Word Grid */
+.lettergrid { display: grid; grid-template-columns: repeat(var(--size), 1fr); gap: 0.5rem; max-width: 24rem; width: 100%; margin: 0 auto; }
+.lettergrid .tile { width: 100%; height: auto; aspect-ratio: 1; border-radius: var(--radius); position: relative; text-transform: none; }
+.lettergrid .tile[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.tile .step { position: absolute; top: 0.2rem; left: 0.35rem; font-size: 0.85rem; font-weight: 700; }

@@ -10,6 +10,7 @@ const GAMES = [
   require("./cheat"),
   require("./gin"),
   require("./wheel"),
+  require("./grid"),
 ];
 
 function createRegistry(engines = GAMES) {
