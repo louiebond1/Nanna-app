@@ -7,6 +7,7 @@ const GAMES = [
   require("./gofish"),
   require("./fleet"),
   require("./clash"),
+  require("./cheat"),
 ];
 
 function createRegistry(engines = GAMES) {

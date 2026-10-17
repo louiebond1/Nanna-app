@@ -9,6 +9,7 @@ const { io: connect } = require("socket.io-client");
 const { createApp } = require("../server/app");
 const { createRegistry } = require("../server/games");
 const { tempFile } = require("./helpers");
+const { createBot } = require("./bot");
 
 const quiet = { error() {}, log() {} };
 
@@ -67,6 +68,7 @@ for (const engine of games.values()) {
 
     let version = 0;
     let moves = 0;
+    const pick = createBot(`e2e-${engine.id}`);
     for (;;) {
       const views = await Promise.all(seats.map((c) => c.until((s) => s.match && s.match.version === version)));
       checkLeaks(version);
@@ -74,11 +76,11 @@ for (const engine of games.values()) {
       const seat = views.findIndex((v) => v.match.legalActions.some((a) => !a.input));
       assert.ok(seat !== -1, `${engine.id}: nobody can move at v${version}`);
       const options = views[seat].match.legalActions.filter((a) => !a.input);
-      const { label, ...move } = options[moves % options.length];
+      const { label, ...move } = pick(options);
       const r = await seats[seat].call("game:action", { actionId: `m${moves}`, version, move });
       assert.ok(r.ok, `${engine.id}: ${r.error}`);
       version = r.version;
-      assert.ok(++moves < 3000, "too many moves");
+      assert.ok(++moves < 10000, "too many moves");
     }
     const end = seats[0].latest;
     assert.ok(end.match.outcome.summary);
