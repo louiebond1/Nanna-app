@@ -115,3 +115,21 @@ button.cell { cursor: pointer; }
 .cell-sunk { background: #3b0d0b; color: #fff; }
 .cell-miss { background: var(--surface); color: var(--text-muted); }
 .cell-preview { outline: 3px dashed var(--focus); outline-offset: -3px; }
+
+/* Colour Clash cards: each colour has its own shape and name, so colour is never the only cue. */
+.ccard {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: space-between;
+  width: 5.5rem; min-height: 7.5rem; padding: 0.4rem;
+  border: 3px solid var(--border); border-radius: var(--radius);
+  font: inherit; font-weight: 800; line-height: 1.1; text-align: center;
+}
+.ccard .big { font-size: var(--text-huge); }
+.ccard small { font-size: 0.85rem; font-weight: 700; }
+button.ccard { cursor: pointer; }
+.cc-red { background: #c62828; color: #fff; }
+.cc-yellow { background: #f9d342; color: #111; }
+.cc-green { background: #2e7d32; color: #fff; }
+.cc-blue { background: #1565c0; color: #fff; }
+.cc-wild { background: #111; color: #fff; }
+.ccard.not-playable { opacity: 0.55; }
+.ccard.playable { outline: 4px solid var(--focus); outline-offset: 2px; }
