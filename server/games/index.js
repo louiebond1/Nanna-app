@@ -14,6 +14,7 @@ const GAMES = [
   require("./whoswho"),
   require("./memory"),
   require("./canasta"),
+  require("./islands"),
 ];
 
 function createRegistry(engines = GAMES) {

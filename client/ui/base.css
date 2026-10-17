@@ -170,3 +170,23 @@ button.ccard { cursor: pointer; }
 .timer { font-size: var(--text-huge); font-weight: 800; text-align: center; }
 .answer-right { outline: 5px solid var(--good); }
 .answer-wrong { outline: 5px dashed var(--bad); }
+
+/* Island Conquest map: SVG background with HTML buttons on top. */
+.map { position: relative; width: 100%; max-width: 46rem; margin: 0 auto; aspect-ratio: 100 / 70; }
+.map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.terr {
+  position: absolute; transform: translate(-50%, -50%);
+  min-width: 3.4rem; min-height: 3.4rem; padding: 0.1rem 0.3rem;
+  border-radius: 999px; border: 3px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font: inherit; font-weight: 800; line-height: 1; cursor: pointer;
+}
+.terr .armies { font-size: 1.3rem; }
+.terr .owner { font-size: 0.75rem; }
+.terr-0 { background: #1d4ed8; color: #fff; }
+.terr-1 { background: #c0392b; color: #fff; }
+.terr-2 { background: #d5d8dc; color: #111; }
+.terr[aria-pressed="true"] { outline: 5px solid var(--focus); outline-offset: 2px; }
+.terr.target { outline: 4px dashed var(--focus); outline-offset: 2px; }
+.terr-label { position: absolute; transform: translate(-50%, 0); font-size: 0.72rem; font-weight: 700; text-align: center; pointer-events: none; white-space: nowrap; }
+@media (max-width: 30rem) { .terr { min-width: 2.75rem; min-height: 2.75rem; } .terr .armies { font-size: 1.05rem; } .terr-label { display: none; } }
