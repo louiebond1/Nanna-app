@@ -8,7 +8,7 @@ const { RoomService } = require("./rooms/service");
 const { attachSockets } = require("./socket");
 const { createRegistry } = require("./games");
 
-function createApp({ dataFile, games = createRegistry(), log = console } = {}) {
+function createApp({ dataFile, games = createRegistry(), log = console, limits } = {}) {
   const store = new Store(dataFile);
   const service = new RoomService({ store, games });
   const app = express();
@@ -27,7 +27,7 @@ function createApp({ dataFile, games = createRegistry(), log = console } = {}) {
 
   const server = http.createServer(app);
   const io = new Server(server, { maxHttpBufferSize: 16 * 1024, serveClient: true });
-  attachSockets(io, service, { log });
+  attachSockets(io, service, { log, limits });
 
   return { app, server, io, store, service };
 }

@@ -10,7 +10,12 @@
 //     must not mutate the state it was given; error is plain English
 //   getPlayerView(state, seat) -> everything that seat may see, nothing more
 //   isGameOver(state) -> boolean
-//   score(state) -> { scores: { [seat]: number }, winner: seat | null, summary }
+//   score(state) -> { scores: { [seat]: number }, winner: seat | null, summary, unit? }
+//     unit names what scores count, e.g. "books" or "points"
+//   hiddenFrom(state, seat) (optional, used by tests): strings that must never
+//     appear in anything sent to that seat, e.g. the opponent's card ids
+//   concurrentActions (optional): action types both players may send at the
+//     same time, which skip the stale-version check
 //   serialize(state) -> JSON-safe value, restore(value) -> state
 const METHODS = [
   "normaliseSettings", "createGame", "legalActions", "applyAction",

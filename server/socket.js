@@ -10,9 +10,14 @@ function clientIp(socket) {
   return socket.handshake.address;
 }
 
-function attachSockets(io, service, { log = console } = {}) {
-  const entryLimit = new RateLimiter({ capacity: 20, refillPerSecond: 20 / 60 });
-  const actionLimit = new RateLimiter({ capacity: 30, refillPerSecond: 3 });
+const DEFAULT_LIMITS = {
+  entry: { capacity: 20, refillPerSecond: 20 / 60 }, // create/join/resume per IP
+  action: { capacity: 30, refillPerSecond: 3 },      // everything else per connection
+};
+
+function attachSockets(io, service, { log = console, limits = DEFAULT_LIMITS } = {}) {
+  const entryLimit = new RateLimiter(limits.entry);
+  const actionLimit = new RateLimiter(limits.action);
 
   const connectedSeats = (roomId) => {
     const seats = [false, false];

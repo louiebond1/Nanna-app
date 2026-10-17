@@ -179,14 +179,18 @@ class RoomService {
     if (!room || !room.seats[seat]) return { error: "You're not in this room any more." };
     if (room.status !== "playing") return { error: "There's no game in progress." };
     const match = room.match;
-    if (input.version !== match.version) {
-      return { error: "The game has moved on since you last looked. Here's the latest.", stale: true };
-    }
     const move = input.move;
     if (!move || typeof move !== "object" || Array.isArray(move) || typeof move.type !== "string") {
       return { error: "That move wasn't understood." };
     }
     const engine = this.games.get(match.gameId);
+    // Moves both players make at the same time (placing ships, finding words)
+    // are listed in engine.concurrentActions and skip the version check; the
+    // engine still validates them against the current state.
+    const concurrent = (engine.concurrentActions || []).includes(move.type);
+    if (input.version !== match.version && !concurrent) {
+      return { error: "The game has moved on since you last looked. Here's the latest.", stale: true };
+    }
     const outcome = engine.applyAction(engine.restore(match.state), seat, move);
     if (outcome.error) return { error: outcome.error };
 

@@ -3,7 +3,9 @@
 // multiplayer flow and tests work (see docs/PLAN.md progress ledger).
 const { assertEngine } = require("../engine/contract");
 
-const GAMES = [];
+const GAMES = [
+  require("./gofish"),
+];
 
 function createRegistry(engines = GAMES) {
   const map = new Map();

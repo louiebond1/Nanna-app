@@ -179,6 +179,7 @@ function gameScreen() {
   const match = state.match;
   const other = state.players[1 - state.you];
   const send = (move) => attempt(() => conn.sendMove(move));
+  send.redraw = draw; // screens call this after a local-only change (e.g. selecting a card)
   const screen = screenFor(match.gameId);
   return h("div", { class: "stack" },
     h("h1", {}, match.title),
@@ -200,9 +201,10 @@ function resultsScreen() {
     h("div", { class: "banner banner-yours", role: "status" },
       outcome.winner === null ? outcome.summary : outcome.winner === state.you ? `You won! ${outcome.summary}` : outcome.summary),
     eventsBlock(match),
+    screenFor(match.gameId).renderResults?.(match, { you: state.you, players: state.players, components }) ?? null,
     h("section", { class: "panel stack" },
       h("h2", {}, "Scores"),
-      state.players.map((p, i) => h("p", {}, `${p ? p.name : `Player ${i + 1}`}: ${outcome.scores[i]}`))),
+      state.players.map((p, i) => h("p", {}, `${p ? p.name : `Player ${i + 1}`}: ${outcome.scores[i]}${outcome.unit ? ` ${outcome.unit}` : ""}`))),
     alertBox(),
     state.notice ? h("p", {}, state.notice) : null,
     other

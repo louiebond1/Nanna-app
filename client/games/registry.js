@@ -3,8 +3,9 @@
 // where ctx = { send(move), you, players, components }. Screens only draw what
 // the server sent and call send(); they never decide whether a move is legal.
 import * as generic from "./generic.js";
+import * as gofish from "./gofish.js";
 
-const screens = {};
+const screens = { gofish };
 
 export function screenFor(gameId) {
   return screens[gameId] || generic;
