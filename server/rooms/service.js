@@ -269,7 +269,9 @@ class RoomService {
         version: room.match.version,
         view: engine.getPlayerView(state, seat),
         legalActions: legal,
-        yourTurn: legal.length > 0,
+        // Free actions marked input (flipping a face, typing a word) don't make it
+        // "your turn"; a real move does.
+        yourTurn: legal.some((a) => !a.input),
         events: room.match.events
           .filter((e) => e.forSeat === undefined || e.forSeat === seat)
           .map(({ text }) => ({ text })),

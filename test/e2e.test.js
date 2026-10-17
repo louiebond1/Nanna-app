@@ -59,7 +59,10 @@ for (const engine of games.values()) {
       if (room.match.version !== version) return;
       const state = engine.restore(room.match.state);
       for (const seat of [0, 1]) {
-        const json = JSON.stringify(seats[seat].latest);
+        // Check the game part of the payload; the lobby's game list holds ids
+        // like "gin" that would falsely match hidden words.
+        const { view, legalActions, events, outcome } = seats[seat].latest.match;
+        const json = JSON.stringify({ view, legalActions, events, outcome });
         for (const secret of engine.hiddenFrom(state, seat)) {
           assert.ok(!json.includes(JSON.stringify(secret)), `${engine.id}: ${secret} leaked to seat ${seat} at v${version}`);
         }
