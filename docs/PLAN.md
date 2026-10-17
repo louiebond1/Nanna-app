@@ -1,6 +1,6 @@
 # Nanna Games: Phase A audit and build plan
 
-Status: **Phase A (audit and plan). No game code has been written yet.**
+Status: **Phase B (platform) done. No real games yet.** Technical details are in [HANDOFF.md](HANDOFF.md).
 
 ## 1. Audit
 
@@ -82,6 +82,40 @@ A plan → B platform → C Go Fish end to end → D games in priority order abo
 
 ## 6. Progress ledger
 
+### Platform (Phase B): done
+
+| Area | Status | Evidence |
+|---|---|---|
+| Engine contract, seeded RNG, dice | Done | `test/engine.test.js` |
+| Rooms: create, join by link or code, ready, settings agreement, rematch, leave | Done | `test/rooms.test.js` |
+| Server validation, turn order, plain-English errors | Done | `test/rooms.test.js` |
+| Idempotent actions, stale-state recovery, simultaneous taps | Done | `test/sockets.test.js` (two real clients) |
+| Persistence across restart, exact turn kept | Done | `test/rooms.test.js`, `test/sockets.test.js` |
+| Hidden info absent from every payload sent to the opponent | Done (tested with the test game) | `test/sockets.test.js` |
+| Rate limits, security headers, unguessable ids | Done | `server/socket.js`, `server/app.js` |
+| Shared UI components + design tokens | Done (provisional look) | `client/ui/` |
+
+**Browser QA run on 17 Oct 2026:** headless Chromium, with an iPad-sized window (820×1180) and an iPhone-sized window (390×844) open side by side. This was **not** tested on a real iPad or iPhone. The test-only High Card game was used. Checks that passed:
+- create room;
+- join via the link;
+- ready, then start;
+- turn banners on both screens;
+- refresh mid-game resumes the turn;
+- **server restart mid-game** shows "Reconnecting", then both players resume the same turn;
+- closing one page shows that player as offline;
+- reopening the app without the link goes straight back into the game;
+- play to the end, results, rematch;
+- Leave asks for confirmation;
+- an unknown code gets a plain-English message;
+- no sideways scrolling on either size.
+
+Screenshots are in `docs/screenshots/`.
+
+**Not done yet:** deployment (waiting on D1), and an accessibility audit with a screen reader.
+
+### Games
+
 | Game | Implemented | Tested | Notes |
 |---|---|---|---|
-| All 11 | No | No | Phase A only |
+| Go Fish | No | No | Next. Waiting on D2. |
+| Other 10 | No | No | |
