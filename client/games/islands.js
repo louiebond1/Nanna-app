@@ -42,9 +42,9 @@ export function render(match, { send, players, you, components: { h, bigButton, 
 
   const map = h("div", { class: "map", role: "group", "aria-label": "Map of the islands" });
   const bg = svg("svg", { viewBox: "0 0 100 70", "aria-hidden": "true" });
-  bg.append(svg("rect", { x: 0, y: 0, width: 100, height: 70, fill: "#bfe0f5" }));
+  bg.append(svg("rect", { x: 0, y: 0, width: 100, height: 70, fill: "#dcebf0" }));
   const islandShapes = { north: [50, 18, 22, 14], west: [21, 50, 15, 19], east: [77, 48, 16, 18] };
-  for (const [, [cx, cy, rx, ry]] of Object.entries(islandShapes)) bg.append(svg("ellipse", { cx, cy, rx, ry, fill: "#cfe8b8", stroke: "#7a9a5a", "stroke-width": 0.6 }));
+  for (const [, [cx, cy, rx, ry]] of Object.entries(islandShapes)) bg.append(svg("ellipse", { cx, cy, rx, ry, fill: "#d4dfbd", stroke: "#61764f", "stroke-width": 0.6 }));
   for (const l of v.links) {
     bg.append(svg("line", { x1: T[l.a].x, y1: T[l.a].y, x2: T[l.b].x, y2: T[l.b].y, stroke: l.sea ? "#2a6f97" : "#6b4f2a", "stroke-width": l.sea ? 0.7 : 0.9, "stroke-dasharray": l.sea ? "2 1.5" : "none" }));
   }
@@ -66,6 +66,16 @@ export function render(match, { send, players, you, components: { h, bigButton, 
     map.append(btn, label);
   }
 
+  const overview = map.cloneNode(true);
+  overview.classList.add("map-overview");
+  overview.setAttribute("role", "img");
+  overview.setAttribute("aria-label", "Island map. The territory list below gives owners, armies and controls.");
+  for (const button of overview.querySelectorAll("button")) {
+    const marker = h("span", { class: `${button.className} terr-marker`, "aria-hidden": "true" }, ...[...button.children].map(c => c.cloneNode(true)));
+    marker.style.setProperty("left", button.style.left);
+    marker.style.setProperty("top", button.style.top);
+    button.replaceWith(marker);
+  }
   let controls = null;
   if (myTurn && v.step === "reinforce") {
     controls = h("section", { class: "panel stack" },
@@ -97,14 +107,15 @@ export function render(match, { send, players, you, components: { h, bigButton, 
   const roll = v.lastRoll;
   return h("div", { class: "stack" },
     h("p", {}, `Round ${v.round}${v.maxRounds ? ` of ${v.maxRounds}` : ""}. Blue “${letterOf(0)}” is ${nameOf(0)}, red “${letterOf(1)}” is ${nameOf(1)}, grey “–” is neutral.`),
-    map,
+    map, overview,
     h("details", { class: "panel", open: true },
       h("summary", {}, "Territories as a list (easier to tap)"),
       v.islands.map((isl) => h("div", { class: "stack" },
         h("h2", {}, isl.name),
         v.territories.filter((t) => t.island === isl.id).map((t) => h("button", {
           type: "button",
-          class: `btn btn-block${t.id === from ? " btn-primary" : ""}`,
+          class: `btn btn-block territory-choice terr-owner-${v.owner[t.id]}${t.id === from ? " btn-primary" : ""}`,
+          "data-owner-letter": letterOf(v.owner[t.id]),
           "aria-pressed": String(t.id === from || t.id === to),
           onclick: () => tap(t.id),
         }, `${t.id === to ? "➜ " : ""}${t.name}: ${nameOf(v.owner[t.id])}, ${v.armies[t.id]} ${v.armies[t.id] === 1 ? "army" : "armies"}`))))),

@@ -25,7 +25,7 @@ export function render(match, { send, players, you, components: { h, bigButton, 
   const v = match.view;
   const oppName = players[1 - you]?.name || "the other player";
   const help = ruleHelp("How to play Fleet Finder", [
-    "First, hide your ships on your board. Choose a ship, choose Across or Down, then tap the square where it should start. Or press “Place my ships for me”.",
+    "First, hide your ships on your board. Choose a ship, choose Across or Down, then choose the square where it should start. On a phone, use the Row and Column selectors below the board. Or press “Place my ships for me”.",
     "When you're happy, press “My ships are ready”. Your ships can't be moved after that.",
     "Then take turns firing at one square on the other player's board. • means a miss, ✕ means a hit.",
     "When every square of a ship has been hit, it sinks. Sink all their ships to win.",
@@ -50,7 +50,7 @@ export function render(match, { send, players, you, components: { h, bigButton, 
       h("div", { class: "row" },
         bigButton(`${across ? "✓ " : ""}Across →`, () => { across = true; send.redraw(); }, { primary: across, "aria-pressed": String(across) }),
         bigButton(`${!across ? "✓ " : ""}Down ↓`, () => { across = false; send.redraw(); }, { primary: !across, "aria-pressed": String(!across) })),
-      h("p", {}, `3. Tap the square where the ${ship.name} should start.`),
+      h("p", {}, `3. Choose the square where the ${ship.name} should start.`),
       board(v.own, {
         look: (s) => OWN[s],
         label: "Your board",
@@ -71,7 +71,7 @@ export function render(match, { send, players, you, components: { h, bigButton, 
 
   return h("div", { class: "stack" },
     h("h2", {}, `${oppName}'s board`),
-    match.yourTurn ? h("p", {}, "Tap a square you haven't tried yet.") : null,
+    match.yourTurn ? h("p", {}, "Choose a square you haven't tried yet.") : null,
     board(v.target, {
       look: (s) => TARGET[s],
       label: `${oppName}'s board`,

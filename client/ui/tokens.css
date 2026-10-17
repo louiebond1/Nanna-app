@@ -1,50 +1,22 @@
-/* Design tokens. The visual redesign should change values here (and in
-   base.css), not the game or networking code. Provisional values only. */
 :root {
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --text-base: 1.25rem;     /* 20px: minimum body size */
-  --text-large: 1.6rem;
-  --text-huge: 2.2rem;
-  --line: 1.45;
-
-  --tap-min: 3.5rem;        /* 56px: minimum tap target */
-  --gap: 1rem;
-  --gap-small: 0.5rem;
-  --radius: 0.75rem;
-  --page-max: 60rem;
-
-  --bg: #fdfaf4;
-  --surface: #ffffff;
-  --text: #1a1a1a;
-  --text-muted: #4a4a4a;
-  --border: #2b2b2b;
-  --accent: #0b5cad;
-  --accent-text: #ffffff;
-  --good: #1d6b2f;
-  --bad: #a3221c;
-  --warn-bg: #fff3c4;
-  --focus: #ff9f1c;
-  --card-red: #b0201a;
-  --card-black: #111111;
-  --sea: #d8ecfa;
-  --ship: #5c6670;
+ color-scheme: light;
+ --font-body: "Avenir Next", ui-rounded, "Segoe UI", system-ui, sans-serif;
+ --font-display: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+ --text-base: 1.25rem; --text-large: 1.6rem; --text-huge: clamp(2rem, 5vw, 3rem); --line: 1.5;
+ --tap-min: 3.5rem; --gap: 1.25rem; --gap-small: .625rem; --radius: 1rem; --page-max: 72rem;
+ --bg: #f4f0e6; --surface: #fffdf7; --surface-soft: #e8eee4;
+ --text: #223d32; --text-muted: #526256; --border: #738275; --line-soft: #cbd1c2;
+ --accent: #24543f; --accent-text: #fffdf7; --good: #27643e; --bad: #a02f35;
+ --warn-bg: #fff0cb; --focus: #965000; --card-red: #ac303b; --card-black: #22382f;
+ --sea: #dcebf0; --ship: #465f66; --shadow: 0 5px 0 #233d320b, 0 12px 30px #233d3208;
 }
-
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #15171a;
-    --surface: #22262b;
-    --text: #f4f4f4;
-    --text-muted: #c9c9c9;
-    --border: #d0d0d0;
-    --accent: #6cb4ff;
-    --accent-text: #0a0a0a;
-    --good: #7ed98f;
-    --bad: #ff8c84;
-    --warn-bg: #4a3d00;
-    --card-red: #ff7b72;
-    --card-black: #f4f4f4;
-    --sea: #17344d;
-    --ship: #8c96a0;
-  }
+ :root:not([data-theme="light"]) {
+  color-scheme: dark;
+  --bg: #182720; --surface: #23372c; --surface-soft: #304638; --text: #faf3df; --text-muted: #ccd5c6;
+  --border: #94a58e; --line-soft: #516651; --accent: #c0d8ae; --accent-text: #182b20;
+  --good: #b2d6a2; --bad: #ffa7a9; --warn-bg: #4a3c23; --focus: #f8cb75;
+  --card-red: #ffa9af; --card-black: #faf3df; --sea: #263e47; --ship: #425f67;
+  --shadow: 0 5px 0 #0002, 0 12px 30px #0001;
+ }
 }

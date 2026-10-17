@@ -5,7 +5,7 @@ import { loadName, saveName, saveSession } from "./core/session.js";
 import * as components from "./ui/components.js";
 import { screenFor } from "./games/registry.js";
 
-const { h, bigButton, turnBanner, playerStatus, confirmDialog } = components;
+const { h, bigButton, turnBanner, playerStatus, confirmDialog, gameIcon, brand } = components;
 const app = document.getElementById("app");
 const connectionBar = document.getElementById("connection");
 
@@ -62,7 +62,7 @@ function alertBox() {
 }
 
 function nameField(id) {
-  return h("div", {},
+  return h("div", { class: "home-name" },
     h("label", { for: id }, "Your name"),
     h("input", { id, type: "text", maxlength: 20, autocomplete: "nickname", value: loadName() }));
 }
@@ -82,23 +82,26 @@ function homeScreen() {
       nameField("join-name"),
       bigButton("Join the game", () => attempt(() => conn.joinRoom(invite, readName("join-name"))), { primary: true, block: true }));
   }
-  return h("div", { class: "stack" },
-    h("h1", {}, "Nanna Games"),
+  return h("div", { class: "stack home-screen" },
+    h("div", { class: "home-intro" }, h("p", { class: "eyebrow" }, "Made for two. Played together."), h("h1", {}, "Make time for a little play."), h("p", { class: "muted" }, "Your favourite games, with your favourite person. Choose a game and take your time.")),
     alertBox(),
     nameField("name"),
+    h("div", { class: "home-options" },
     h("section", { class: "panel stack" },
+      h("span", { class: "section-number", "aria-hidden": "true" }, "1"),
       h("h2", {}, "Start a new room"),
       h("p", { class: "muted" }, "You'll get a link and a code to send to the other player."),
       bigButton("Start a room", () => attempt(() => conn.createRoom(readName("name"))), { primary: true, block: true })),
     h("section", { class: "panel stack" },
+      h("span", { class: "section-number", "aria-hidden": "true" }, "2"),
       h("h2", {}, "Join a room"),
       h("div", {}, h("label", { for: "code" }, "Room code"),
         h("input", { id: "code", type: "text", maxlength: 10, autocomplete: "off", autocapitalize: "characters", inputmode: "text" })),
-      bigButton("Join", () => attempt(() => conn.joinRoom(document.getElementById("code").value, readName("name"))), { block: true })));
+      bigButton("Join", () => attempt(() => conn.joinRoom(document.getElementById("code").value, readName("name"))), { block: true }))));
 }
 
 function playersPanel() {
-  return h("section", { class: "panel stack", "aria-label": "Players" },
+  return h("section", { class: "panel stack players-panel", "aria-label": "Players" },
     state.players.map((p, i) => playerStatus(p, { isYou: i === state.you })));
 }
 
@@ -123,7 +126,7 @@ function inviteBlock() {
     }
     draw();
   };
-  return h("section", { class: "panel stack" },
+  return h("section", { class: "panel stack invite-panel" },
     h("h2", {}, "Invite the other player"),
     h("p", {}, "Send them the link, or tell them this code:"),
     h("div", { class: "code", "aria-label": `Room code ${state.code.split("").join(" ")}` }, state.code),
@@ -162,10 +165,12 @@ function lobbyScreen() {
     h("section", { class: "panel stack" },
       h("h2", {}, "Choose a game"),
       state.games.length
-        ? h("div", { class: "stack" }, state.games.map((g) =>
-            bigButton(g.id === state.lobby.gameId ? `✓ ${g.title} (chosen)` : g.title,
-              () => attempt(() => conn.chooseGame(g.id, g.defaultSettings)),
-              { block: true, "aria-pressed": String(g.id === state.lobby.gameId) })))
+        ? h("div", { class: "game-picker" }, state.games.map((g) =>
+            h("button", { type: "button", class: "btn game-choice", "aria-pressed": String(g.id === state.lobby.gameId),
+              onclick: () => attempt(() => conn.chooseGame(g.id, g.defaultSettings)) },
+              gameIcon(g.id),
+              h("span", { class: "game-choice-title" }, g.id === state.lobby.gameId ? `✓ ${g.title} (chosen)` : g.title),
+              g.blurb ? h("span", { class: "game-choice-blurb" }, g.blurb) : null)))
         : h("p", {}, "No games are ready yet. They're being built and tested.")),
     chosen ? h("section", { class: "panel stack" },
       h("h2", {}, chosen.title),
@@ -180,7 +185,7 @@ function lobbyScreen() {
 
 function eventsBlock(match) {
   if (!match.events.length) return null;
-  return h("section", { class: "panel", "aria-label": "What just happened" },
+  return h("section", { class: "panel events-panel", "aria-label": "What just happened" },
     h("h2", {}, "Last move"),
     h("ul", { class: "events" }, match.events.map((e) => h("li", {}, e.text))));
 }
@@ -192,12 +197,12 @@ function gameScreen() {
   send.redraw = draw; // screens call this after a local-only change (e.g. selecting a card)
   // send() resolves with the server's answer ({ ok } or { error }).
   const screen = screenFor(match.gameId);
-  return h("div", { class: "stack" },
+  return h("div", { class: `stack game-screen game-${match.gameId}` },
     h("h1", {}, match.title),
     turnBanner({ yourTurn: match.yourTurn, prompt: match.view.prompt, waitingFor: other ? other.name : "the other player" }),
     alertBox(),
     eventsBlock(match),
-    screen.render(match, { send, you: state.you, players: state.players, components }),
+    h("div", { class: "game-table" }, screen.render(match, { send, you: state.you, players: state.players, components })),
     playersPanel(),
     leaveButton());
 }
@@ -208,7 +213,7 @@ function resultsScreen() {
   const other = state.players[1 - state.you];
   const youVoted = state.rematch[state.you];
   return h("div", { class: "stack" },
-    h("h1", {}, `${match.title}: game over`),
+    h("div", { class: "result-heading" }, gameIcon(match.gameId), h("h1", {}, `${match.title}: game over`)),
     h("div", { class: "banner banner-yours", role: "status" },
       outcome.winner === null ? "It's a draw." : outcome.winner === state.you ? "You won!" : `${state.players[outcome.winner]?.name || "The other player"} won.`),
     h("p", {}, outcome.summary),
@@ -237,7 +242,7 @@ function draw() {
   else if (state.status === "lobby") view = lobbyScreen();
   else if (state.status === "playing") view = gameScreen();
   else view = resultsScreen();
-  app.replaceChildren(view);
+  app.replaceChildren(brand(), view);
 
   for (const [id, value] of typed) {
     const input = document.getElementById(id);
