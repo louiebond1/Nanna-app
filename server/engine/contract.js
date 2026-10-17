@@ -13,6 +13,8 @@
 //   isGameOver(state) -> boolean
 //   score(state) -> { scores: { [seat]: number }, winner: seat | null, summary, unit? }
 //     unit names what scores count, e.g. "books" or "points"
+//   testSettings (optional): settings for automated playthroughs, when the
+//     defaults would make a bot game very long (e.g. Canasta to 5000)
 //   hiddenFrom(state, seat) (optional, used by tests): strings that must never
 //     appear in anything sent to that seat, e.g. the opponent's card ids
 //   concurrentActions (optional): action types both players may send at the

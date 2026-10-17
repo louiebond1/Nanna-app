@@ -79,6 +79,7 @@ const engine = {
   title: "Gin Rummy",
   blurb: "Collect sets and runs, then knock when your leftover cards add up to 10 or less.",
   defaultSettings: { target: 100 },
+  testSettings: { target: 50 }, // automated playthroughs: shorter game
   settingsOptions: {
     target: { label: "Play to", choices: [{ value: 100, label: "100 points (standard)" }, { value: 50, label: "50 points (shorter)" }] },
   },

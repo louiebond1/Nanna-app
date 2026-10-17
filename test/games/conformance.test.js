@@ -11,7 +11,7 @@ const players = [{ seat: 0, name: "Nanna" }, { seat: 1, name: "Sam" }];
 
 for (const engine of createRegistry().values()) {
   test(`${engine.id}: random games reach a scored ending`, () => {
-    const settings = engine.normaliseSettings({ ...engine.defaultSettings });
+    const settings = engine.normaliseSettings({ ...engine.defaultSettings, ...engine.testSettings });
     assert.ok(!settings.error, settings.error);
     for (let i = 0; i < 60; i++) {
       let state = engine.createGame(settings, players, `conf-${engine.id}-${i}`);

@@ -13,6 +13,7 @@ const GAMES = [
   require("./grid"),
   require("./whoswho"),
   require("./memory"),
+  require("./canasta"),
 ];
 
 function createRegistry(engines = GAMES) {

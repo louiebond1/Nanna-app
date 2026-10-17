@@ -49,7 +49,7 @@ for (const engine of games.values()) {
     const created = await seats[0].call("room:create", { name: "Nanna" });
     const code = (await seats[0].until((s) => s.code)).code;
     await seats[1].call("room:join", { room: code, name: "Sam" });
-    await seats[0].call("lobby:choose", { gameId: engine.id, settings: engine.defaultSettings });
+    await seats[0].call("lobby:choose", { gameId: engine.id, settings: { ...engine.defaultSettings, ...engine.testSettings } });
     await seats[0].call("lobby:ready", { ready: true });
     await seats[1].call("lobby:ready", { ready: true });
 
