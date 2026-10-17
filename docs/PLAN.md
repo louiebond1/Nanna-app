@@ -102,7 +102,9 @@ Status (17 October 2026): **the platform and all 11 games are implemented, teste
 - Railway project **`nanna-games`**, service `nanna-app`, region europe-west4, volume `nanna-data` mounted at `/data`, health check `/healthz`.
 - URL: **https://nanna-app-production.up.railway.app**
 - Railway reported the first deployment (platform only) as SUCCESS, with the health check passing and the volume mounted.
-- Later pushes didn't trigger deploys, because the GitHub repo had been renamed. The service was reconnected to `louiebond1/Nanna-app`. See HANDOFF.md for the result of that redeploy.
+- Later pushes didn't trigger deploys, because the GitHub repo had been renamed. The service was reconnected to `louiebond1/Nanna-app`.
+  - The deploy of commit `1829a60` (all 11 games) then reported **SUCCESS**. Its logs show the server starting on the existing volume with no errors (only Node's "SQLite is experimental" warning).
+  - Pushes to `main` trigger deploys again: commit `2295079` (hardening) deployed automatically and reported **SUCCESS** at 15:11 UTC on 17 October 2026.
 
 ### Not verified (honest gaps)
 
