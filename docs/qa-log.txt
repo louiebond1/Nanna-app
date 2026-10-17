@@ -1,0 +1,44 @@
+QA run, 17 October 2026: headless Chromium, tablet 820x1180 + phone 390x844 windows side by side.
+Not run on real iOS devices or Safari/WebKit.
+
+== scripts/qa/run.sh platform (test-only High Card game) ==
+OK: room created, code 675M6X
+OK: Sam joined via invite link (phone viewport)
+OK: game started on both devices; turn banners correct
+OK: Sam refreshed mid-game and resumed on his turn
+OK: server restarted mid-game: phone showed reconnecting banner, both resumed the same turn
+OK: closing Sam's page shows him offline on Nanna's tablet
+OK: Sam reopened the app with no link and went straight back into his turn
+OK: played to the end; results on both
+OK: rematch started: Nanna sees "Your turn: make your move."
+OK: leave asks for confirmation; other player sees plain notice
+OK: unknown code gives a plain-English message
+OK: tablet has no horizontal scroll
+OK: phone has no horizontal scroll
+
+== scripts/qa/run.sh games ==
+OK gofish: played to the end through the UI on tablet + phone, results shown, rematch started
+OK fleet: off-board placement shows a plain-English error and keeps the same ship chosen
+OK fleet: played to the end through the UI on tablet + phone, results shown, rematch started
+OK clash: tapping an unplayable card explains why
+OK clash: played to the end through the UI on tablet + phone, results shown, rematch started
+OK cheat: played to the end through the UI on tablet + phone, results shown, rematch started
+OK gin: played to the end through the UI on tablet + phone, results shown, rematch started
+OK wheel: a too-short word gets a plain-English message
+OK wheel: both players entered real words (21 everyday answers on this wheel); repeat word refused
+OK wheel: played to the end through the UI on tablet + phone, results shown, rematch started
+OK grid: tapping a square that doesn't touch explains the rule
+OK grid: spelled LID by tapping squares; both players typed real words
+OK grid: played to the end through the UI on tablet + phone, results shown, rematch started
+OK whoswho: played to the end through the UI on tablet + phone, results shown, rematch started
+OK memory: study timer ran out and moved to the question on its own
+OK memory: flagging a question works
+OK memory: played to the end through the UI on tablet + phone, results shown, rematch started
+OK canasta: invalid meld refused with: A meld needs at least two natural (non-wild) cards.
+OK canasta: played to the end through the UI on tablet + phone, results shown, rematch started
+OK islands: the attack step tells you what to tap next
+OK islands: played to the end through the UI on tablet + phone, results shown, rematch started
+
+== scripts/qa/run.sh accessibility (axe-core 4.10.3, WCAG 2 A/AA + best practice) ==
+scanned 48 screens
+(no violations listed above = none found)

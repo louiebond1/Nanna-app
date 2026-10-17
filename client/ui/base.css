@@ -131,7 +131,7 @@ button.ccard { cursor: pointer; }
 .cc-green { background: #2e7d32; color: #fff; }
 .cc-blue { background: #1565c0; color: #fff; }
 .cc-wild { background: #111; color: #fff; }
-.ccard.not-playable { opacity: 0.55; }
+.ccard.not-playable { border-style: dashed; } /* not faded: text must keep its contrast */
 .ccard.playable { outline: 4px solid var(--focus); outline-offset: 2px; }
 
 /* Letter Wheel: 2-3-2 layout around a highlighted middle letter. */
@@ -156,7 +156,8 @@ button.ccard { cursor: pointer; }
 .face { display: flex; flex-direction: column; align-items: center; padding: 0.3rem; border: 3px solid var(--border);
   border-radius: var(--radius); background: var(--surface); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; min-height: var(--tap-min); }
 .face svg { width: 100%; height: auto; }
-.face.down { opacity: 0.35; background: var(--bg); }
+.face.down { background: var(--bg); border-style: dashed; }
+.face.down svg { opacity: 0.25; } /* fade the picture, keep the name readable */
 .face.down .face-name::after { content: " ✕"; }
 .face.guessing { outline: 4px dashed var(--focus); outline-offset: 2px; }
 .face-big { width: 8rem; flex: none; }

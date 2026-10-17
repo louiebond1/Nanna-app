@@ -1,7 +1,7 @@
 // Screen flow: home -> lobby -> playing -> results. Only reads the room
 // state from the server and calls the connection; no game rules live here.
 import { createConnection } from "./core/connection.js";
-import { loadName, saveName } from "./core/session.js";
+import { loadName, saveName, saveSession } from "./core/session.js";
 import * as components from "./ui/components.js";
 import { screenFor } from "./games/registry.js";
 
@@ -12,6 +12,15 @@ const connectionBar = document.getElementById("connection");
 let state = null;     // latest room state from the server
 let message = null;   // plain-English error or tip for the last thing tried
 let busy = false;
+
+// Demo links (scripts/demo.js) carry a session after "#session=". Adopt it,
+// then remove it from the address bar so it isn't shared by accident.
+const demo = new URLSearchParams(location.hash.slice(1)).get("session");
+if (demo && /^[0-9a-f]{32}\.[0-9a-f]{64}$/.test(demo)) {
+  const [roomId, token] = demo.split(".");
+  saveSession({ roomId, token });
+  history.replaceState(null, "", location.pathname);
+}
 
 const conn = createConnection({
   onState(next) {
@@ -238,5 +247,8 @@ function draw() {
     || (focusedLabel && [...app.querySelectorAll("button")].find((b) => b.textContent === focusedLabel));
   if (again) again.focus();
 }
+
+// Opening a new invite link in the same tab only changes the #join= part.
+window.addEventListener("hashchange", () => { if (!state) draw(); });
 
 draw();
