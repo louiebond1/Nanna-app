@@ -12,7 +12,7 @@ function clientIp(socket) {
 
 const DEFAULT_LIMITS = {
   entry: { capacity: 20, refillPerSecond: 20 / 60 }, // create/join/resume per IP
-  action: { capacity: 30, refillPerSecond: 3 },      // everything else per connection
+  action: { capacity: 60, refillPerSecond: 10 },     // everything else per connection; far above human tapping
 };
 
 function attachSockets(io, service, { log = console, limits = DEFAULT_LIMITS } = {}) {

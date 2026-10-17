@@ -48,7 +48,7 @@ The server pushes:
 - `room:state` with that seat's view (below), after every change and every connect or disconnect;
 - `room:gone` when that seat no longer exists, for example after the player left on another device.
 
-Rate limits: 20 create/join/resume per minute per IP, and about 3 actions per second per connection.
+Rate limits: 20 create/join/resume per minute per IP. Other events: a burst of 60, then 10 per second per connection.
 
 ## `room:state` shape
 
