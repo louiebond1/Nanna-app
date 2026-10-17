@@ -1,4 +1,5 @@
 // Look & Remember screen. Pictures are drawn from the card's item list.
+import { countryCard } from './country-card.js';
 const NS = "http://www.w3.org/2000/svg";
 const COLOURS = { red: "#d62828", blue: "#1d4ed8", yellow: "#f4c430", green: "#2e8b57", purple: "#7b3fa0", orange: "#f08c00", pink: "#e75480", brown: "#8b5a2b", white: "#ffffff", black: "#222222" };
 const OUT = "#1a1a1a";
@@ -31,6 +32,7 @@ const DRAW = {
 };
 
 export function scene(card, title) {
+  if (card.country) return countryCard(card.country);
   const night = card.sky === "night";
   const svg = el("svg", { viewBox: "0 0 100 100", class: "scene", role: "img", "aria-label": `Picture: ${title}` },
     el("rect", { x: 0, y: 0, width: 100, height: 100, fill: night ? "#1b2a4a" : "#cfe8ff" }),
@@ -55,7 +57,7 @@ export function render(match, { send, players, you, components: { h, bigButton, 
 
   const header = h("p", {}, `Picture ${v.round + 1} of ${v.rounds}. Points: you ${v.points[you]}, ${players[1 - you]?.name || "them"} ${v.points[1 - you]}.`);
   const help = ruleHelp("How to play Look & Remember", [
-    "Take turns. On your turn, study the picture carefully.",
+    "Take turns exploring country cards. Look at the landmark, flag, labels, traveller and birds.",
     v.studySeconds ? `You have ${v.studySeconds} seconds; press “I'm ready” sooner if you like.` : "There's no time limit: press “I'm ready” when you've had a good look.",
     "Then the picture is hidden, the dice is rolled, and you're asked one of six questions about it. Choose the answer you remember.",
     "Each right answer scores a point. If a question seems unclear, either of you can flag it to be checked.",

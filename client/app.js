@@ -4,6 +4,8 @@ import { createConnection } from "./core/connection.js";
 import { loadName, saveName, saveSession } from "./core/session.js";
 import * as components from "./ui/components.js";
 import { screenFor } from "./games/registry.js";
+import { workspace, view, fitWorkspace } from "./ui/workspace.js";
+import { gameWorkspace } from "./ui/game-workspace.js";
 
 const { h, bigButton, turnBanner, playerStatus, confirmDialog, gameIcon, brand } = components;
 const app = document.getElementById("app");
@@ -12,6 +14,7 @@ const connectionBar = document.getElementById("connection");
 let state = null;     // latest room state from the server
 let message = null;   // plain-English error or tip for the last thing tried
 let busy = false;
+let lobbyMode = "choose";
 
 // Demo links (scripts/demo.js) carry a session after "#session=". Adopt it,
 // then remove it from the address bar so it isn't shared by accident.
@@ -83,17 +86,14 @@ function homeScreen() {
       bigButton("Join the game", () => attempt(() => conn.joinRoom(invite, readName("join-name"))), { primary: true, block: true }));
   }
   return h("div", { class: "stack home-screen" },
-    h("div", { class: "home-intro" }, h("p", { class: "eyebrow" }, "Made for two. Played together."), h("h1", {}, "Make time for a little play."), h("p", { class: "muted" }, "Your favourite games, with your favourite person. Choose a game and take your time.")),
+    h("div", { class: "home-intro" }, h("h1", {}, "Let's play."), h("p", { class: "muted" }, "Play together, at your own pace.")),
     alertBox(),
     nameField("name"),
     h("div", { class: "home-options" },
     h("section", { class: "panel stack" },
-      h("span", { class: "section-number", "aria-hidden": "true" }, "1"),
       h("h2", {}, "Start a new room"),
-      h("p", { class: "muted" }, "You'll get a link and a code to send to the other player."),
       bigButton("Start a room", () => attempt(() => conn.createRoom(readName("name"))), { primary: true, block: true })),
     h("section", { class: "panel stack" },
-      h("span", { class: "section-number", "aria-hidden": "true" }, "2"),
       h("h2", {}, "Join a room"),
       h("div", {}, h("label", { for: "code" }, "Room code"),
         h("input", { id: "code", type: "text", maxlength: 10, autocomplete: "off", autocapitalize: "characters", inputmode: "text" })),
@@ -156,6 +156,18 @@ function lobbyScreen() {
   const other = state.players[1 - state.you];
   const chosen = state.games.find((g) => g.id === state.lobby.gameId);
   const ready = state.lobby.ready;
+  if (chosen && lobbyMode === "ready") {
+    return workspace({ key: `lobby-${chosen.id}`, title: chosen.title,
+      error: alertBox(),
+      groups: [view("play", "Game settings", settingsBlock(chosen),
+        state.notice ? h("p", {}, state.notice) : null,
+        h("p", {}, ready[state.you] ? "You're ready." : "Press Ready when you're happy with the settings."),
+        h("p", {}, other ? ready[1 - state.you] ? `${other.name} is ready.` : `${other.name} isn't ready yet.` : "Waiting for the other player to join.")),
+        view("details", "About this game", h("p", {}, chosen.blurb)),
+        view("menu", "Players & invite", playersPanel(), other ? null : inviteBlock(), leaveButton())],
+      actions: [bigButton(ready[state.you] ? "I'm not ready" : "I'm ready", () => attempt(() => conn.setReady(!ready[state.you])), { primary: !ready[state.you] }),
+        bigButton("Choose a game", () => { lobbyMode = "choose"; draw(); })] });
+  }
   return h("div", { class: "stack" },
     h("h1", {}, "Your room"),
     state.notice ? h("p", {}, state.notice) : null,
@@ -167,7 +179,7 @@ function lobbyScreen() {
       state.games.length
         ? h("div", { class: "game-picker" }, state.games.map((g) =>
             h("button", { type: "button", class: "btn game-choice", "aria-pressed": String(g.id === state.lobby.gameId),
-              onclick: () => attempt(() => conn.chooseGame(g.id, g.defaultSettings)) },
+              onclick: () => { lobbyMode = "ready"; attempt(() => conn.chooseGame(g.id, g.defaultSettings)); } },
               gameIcon(g.id),
               h("span", { class: "game-choice-title" }, g.id === state.lobby.gameId ? `✓ ${g.title} (chosen)` : g.title),
               g.blurb ? h("span", { class: "game-choice-blurb" }, g.blurb) : null)))
@@ -197,14 +209,10 @@ function gameScreen() {
   send.redraw = draw; // screens call this after a local-only change (e.g. selecting a card)
   // send() resolves with the server's answer ({ ok } or { error }).
   const screen = screenFor(match.gameId);
-  return h("div", { class: `stack game-screen game-${match.gameId}` },
-    h("h1", {}, match.title),
-    turnBanner({ yourTurn: match.yourTurn, prompt: match.view.prompt, waitingFor: other ? other.name : "the other player" }),
-    alertBox(),
-    eventsBlock(match),
-    h("div", { class: "game-table" }, screen.render(match, { send, you: state.you, players: state.players, components })),
-    playersPanel(),
-    leaveButton());
+  return gameWorkspace(screen.render(match, { send, you: state.you, players: state.players, components }), match, {
+    banner: turnBanner({ yourTurn: match.yourTurn, prompt: match.view.prompt, waitingFor: other ? other.name : "the other player" }),
+    error: alertBox(), menu: [eventsBlock(match), playersPanel(), leaveButton()],
+  });
 }
 
 function resultsScreen() {
@@ -212,23 +220,20 @@ function resultsScreen() {
   const { outcome } = match;
   const other = state.players[1 - state.you];
   const youVoted = state.rematch[state.you];
-  return h("div", { class: "stack" },
-    h("div", { class: "result-heading" }, gameIcon(match.gameId), h("h1", {}, `${match.title}: game over`)),
-    h("div", { class: "banner banner-yours", role: "status" },
+  return workspace({ key: `results-${match.gameId}`, title: `${match.title}: game over`,
+    banner: h("div", { class: "banner banner-yours", role: "status" },
       outcome.winner === null ? "It's a draw." : outcome.winner === state.you ? "You won!" : `${state.players[outcome.winner]?.name || "The other player"} won.`),
-    h("p", {}, outcome.summary),
-    eventsBlock(match),
-    screenFor(match.gameId).renderResults?.(match, { you: state.you, players: state.players, components }) ?? null,
-    h("section", { class: "panel stack" },
+    groups: [view("play", "Result", h("p", {}, outcome.summary), state.notice ? h("p", {}, state.notice) : null,
+      h("section", { class: "panel stack" },
       h("h2", {}, "Scores"),
-      state.players.map((p, i) => h("p", {}, `${p ? p.name : `Player ${i + 1}`}: ${outcome.scores[i]}${outcome.unit ? ` ${outcome.unit}` : ""}`))),
-    alertBox(),
-    state.notice ? h("p", {}, state.notice) : null,
+      state.players.map((p, i) => h("p", {}, `${p ? p.name : `Player ${i + 1}`}: ${outcome.scores[i]}${outcome.unit ? ` ${outcome.unit}` : ""}`)))),
+      view("details", "Game details", screenFor(match.gameId).renderResults?.(match, { you: state.you, players: state.players, components })),
+      view("menu", "Menu", eventsBlock(match), playersPanel(), leaveButton())],
+    error: alertBox(), actions: [
     other
       ? bigButton(youVoted ? `Waiting for ${other.name} to agree to a rematch…` : "Play again", () => attempt(() => conn.rematch()), { primary: !youVoted, disabled: youVoted, block: true })
       : h("p", {}, "The other player has left."),
-    bigButton("Choose a different game", () => attempt(() => conn.chooseGame(match.gameId, match.settings)), { block: true }),
-    leaveButton());
+    bigButton("Choose a different game", () => { lobbyMode = "choose"; attempt(() => conn.chooseGame(match.gameId, match.settings)); }, { block: true })] });
 }
 
 function draw() {
@@ -242,7 +247,13 @@ function draw() {
   else if (state.status === "lobby") view = lobbyScreen();
   else if (state.status === "playing") view = gameScreen();
   else view = resultsScreen();
-  app.replaceChildren(brand(), view);
+  const fitted = view.classList?.contains("workspace");
+  const selecting = !!state && state.status === "lobby" && !fitted;
+  document.body.classList.toggle("selection-mode", selecting);
+  document.body.classList.toggle("workspace-mode", fitted);
+  document.body.classList.toggle("home-mode", !state);
+  app.replaceChildren(...(fitted ? [view] : [brand(), view]));
+  fitWorkspace();
 
   for (const [id, value] of typed) {
     const input = document.getElementById(id);
@@ -255,5 +266,6 @@ function draw() {
 
 // Opening a new invite link in the same tab only changes the #join= part.
 window.addEventListener("hashchange", () => { if (!state) draw(); });
+app.addEventListener("dismiss-game-error", () => { message = null; draw(); });
 
 draw();

@@ -2,6 +2,7 @@ import { createRequire } from "module";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import { installWorkspaceNavigation } from './workspace-navigation.mjs';
 import { fileURLToPath } from "url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -17,6 +18,7 @@ const browser = await chromium.launch(process.env.PW_EXECUTABLE_PATH ? { executa
 const nanna = await browser.newContext({ viewport: { width: 820, height: 1180 }, bypassCSP: true, deviceScaleFactor: 1 });
 const sam = await browser.newContext({ viewport: { width: 390, height: 844 }, bypassCSP: true, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
 const a = await nanna.newPage(); let b = await sam.newPage();
+installWorkspaceNavigation(a);
 for (const [n, p] of [["A", a], ["B", b]]) {
   p.on("console", (m) => m.type() === "error" && !(restarting && m.text().includes("ERR_CONNECTION_REFUSED")) && log.push(`FAIL ${n} console error: ${m.text()}`));
   p.on("pageerror", (e) => log.push(`FAIL ${n} page error: ${e.message}`));

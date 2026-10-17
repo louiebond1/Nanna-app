@@ -20,6 +20,9 @@ case "$KIND" in
   accessibility)
     QA_PORT=3124 "$HERE/start-server.sh" "$DATA" "$LOG"; sleep 1
     QA_URL=http://localhost:3124 node "$HERE/accessibility.mjs" || CODE=$? ;;
+  viewport)
+    QA_PORT=3124 "$HERE/start-server.sh" "$DATA" "$LOG"; sleep 1
+    QA_URL=http://localhost:3124 node "$HERE/viewport.mjs" || CODE=$? ;;
   platform)
     export QA_PORT=3123 QA_SERVER=scripts/dev-test-game.js
     "$HERE/start-server.sh" "$DATA" "$LOG"; sleep 1
