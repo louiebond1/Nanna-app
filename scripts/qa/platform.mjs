@@ -1,27 +1,41 @@
 import { createRequire } from "module";
 import path from "path";
 import os from "os";
+import fs from "fs";
 import { fileURLToPath } from "url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 // Playwright: set PW_ROOT to its install folder, e.g. PW_ROOT=$(npm root -g)/playwright
 const require = createRequire(process.env.PW_ROOT + "/");
 const { chromium } = require("playwright");
-const SHOTS = path.join(ROOT, "docs", "screenshots");
+const SHOTS = path.join(ROOT, "docs", "screenshots", "redesign", "platform");
+fs.mkdirSync(SHOTS, { recursive: true });
 const URL = process.env.QA_URL || "http://localhost:3123";
 const log = [];
-const browser = await chromium.launch();
-const nanna = await browser.newContext({ viewport: { width: 820, height: 1180 }, deviceScaleFactor: 1 });
-const sam = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
+let restarting = false;
+const browser = await chromium.launch(process.env.PW_EXECUTABLE_PATH ? { executablePath: process.env.PW_EXECUTABLE_PATH } : {});
+const nanna = await browser.newContext({ viewport: { width: 820, height: 1180 }, bypassCSP: true, deviceScaleFactor: 1 });
+const sam = await browser.newContext({ viewport: { width: 390, height: 844 }, bypassCSP: true, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
 const a = await nanna.newPage(); let b = await sam.newPage();
 for (const [n, p] of [["A", a], ["B", b]]) {
-  p.on("console", (m) => m.type() === "error" && log.push(`${n} console error: ${m.text()}`));
-  p.on("pageerror", (e) => log.push(`${n} page error: ${e.message}`));
+  p.on("console", (m) => m.type() === "error" && !(restarting && m.text().includes("ERR_CONNECTION_REFUSED")) && log.push(`FAIL ${n} console error: ${m.text()}`));
+  p.on("pageerror", (e) => log.push(`FAIL ${n} page error: ${e.message}`));
 }
-const shot = (p, name) => p.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true });
+const shot = async (p, name) => {
+  for (const scheme of ["light", "dark"]) {
+    await p.emulateMedia({ colorScheme: scheme });
+    await p.waitForTimeout(200);
+    await p.evaluate(fs.readFileSync(path.join(ROOT, "node_modules/axe-core/axe.min.js"), "utf8"));
+    const violations = await p.evaluate(async () => (await window.axe.run(document, { runOnly: ["wcag2a", "wcag2aa", "best-practice"] })).violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(" ")).join(", ")}`));
+    if (violations.length) log.push(`FAIL ${scheme} ${name}: ${violations.join(", ")}`);
+    await p.screenshot({ path: `${SHOTS}/${scheme}-${name}.png`, fullPage: true });
+  }
+  await p.emulateMedia({ colorScheme: "light" });
+};
 const step = (s) => { log.push("OK: " + s); };
 
 await a.goto(URL);
+await shot(a, "00-home");
 await a.fill("#name", "Nanna");
 await a.click("text=Start a room");
 await a.waitForSelector(".code");
@@ -32,6 +46,7 @@ step(`room created, code ${code}`);
 const roomId = await a.evaluate(() => JSON.parse(localStorage.getItem("nanna.session")).roomId);
 await b.goto(`${URL}/#join=${roomId}`);
 await b.waitForSelector("text=You've been invited");
+await shot(b, "00-invite-phone");
 await b.fill("#join-name", "Sam");
 await b.click("text=Join the game");
 await b.waitForSelector("text=Choose a game");
@@ -59,6 +74,7 @@ step("Sam refreshed mid-game and resumed on his turn");
 
 // Server restart mid-game: both should show reconnecting, then resume the same turn.
 const { execSync } = await import("child_process");
+restarting = true;
 execSync(`kill $(cat ${process.env.QA_DATA}/pid)`);
 await b.waitForSelector("text=Connection lost", { timeout: 15000 });
 await shot(b, "05-reconnecting");
@@ -66,6 +82,7 @@ execSync(`${process.env.QA_RUN} ${process.env.QA_DATA} ${process.env.QA_LOG} scr
 await b.waitForSelector("#connection", { state: "hidden", timeout: 20000 });
 await b.waitForSelector("text=Your turn", { timeout: 5000 });
 await a.waitForSelector("text=Waiting for Sam", { timeout: 5000 });
+restarting = false;
 step("server restarted mid-game: phone showed reconnecting banner, both resumed the same turn");
 // Opponent offline indicator: close Sam's page, tablet should show offline.
 await b.close();
@@ -73,7 +90,7 @@ await a.waitForSelector("text=offline", { timeout: 5000 });
 await shot(a, "06-opponent-offline");
 step("closing Sam's page shows him offline on Nanna's tablet");
 b = await sam.newPage();
-b.on("pageerror", (e) => log.push(`B page error: ${e.message}`));
+b.on("pageerror", (e) => log.push(`FAIL B page error: ${e.message}`));
 await b.goto(URL);
 await b.waitForSelector("text=Your turn", { timeout: 5000 });
 step("Sam reopened the app with no link and went straight back into his turn");

@@ -1,6 +1,7 @@
 import { createRequire } from "module";
 import path from "path";
 import os from "os";
+import fs from "fs";
 import { fileURLToPath } from "url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -10,12 +11,23 @@ const { chromium } = require("playwright");
 const AXE = path.join(ROOT, "node_modules", "axe-core", "axe.min.js");
 const URL = process.env.QA_URL;
 const GAMES = ["Go Fish", "Fleet Finder", "Colour Clash", "Cheat", "Gin Rummy", "Letter Wheel", "Word Grid", "Who's Who", "Look & Remember", "Canasta", "Island Conquest"];
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PW_EXECUTABLE_PATH ? { executablePath: process.env.PW_EXECUTABLE_PATH } : {});
 const out = [];
 async function scan(page, label) {
   await page.addScriptTag({ path: AXE });
   const r = await page.evaluate(async () => (await window.axe.run(document, { runOnly: ["wcag2a", "wcag2aa", "best-practice"] })).violations
     .map((v) => ({ id: v.id, impact: v.impact, n: v.nodes.length, help: v.help, sample: v.nodes[0]?.target?.join(" ") })));
+  const layout = await page.evaluate(() => ({
+    overflow: document.documentElement.scrollWidth > innerWidth,
+    smallTargets: [...document.querySelectorAll("button, input, select, summary")].filter(e => {
+      const b = e.getBoundingClientRect();
+      return b.width > 0 && b.height > 0 && (b.width < 55.5 || b.height < 55.5);
+    }).map(e => `${e.tagName} ${e.getAttribute("aria-label") || e.textContent}`).slice(0, 5),
+  }));
+  if (layout.overflow) r.push({ impact: "serious", id: "horizontal-overflow", help: "No sideways scrolling", sample: label });
+  if (layout.smallTargets.length) r.push({ impact: "serious", id: "small-target", help: "Tap targets at least 56px", sample: layout.smallTargets.join("; ") });
+  fs.mkdirSync(path.join(ROOT, "docs/screenshots/redesign"), { recursive: true });
+  await page.screenshot({ path: path.join(ROOT, "docs/screenshots/redesign", label.replace(/[^a-z0-9]+/gi, "-").replace(/-$/, "").toLowerCase() + ".png"), fullPage: true });
   out.push({ label, r });
 }
 for (const scheme of ["light", "dark"]) {

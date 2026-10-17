@@ -2,17 +2,19 @@
 import { createRequire } from "module";
 import path from "path";
 import os from "os";
+import fs from "fs";
 import { fileURLToPath } from "url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 // Playwright: set PW_ROOT to its install folder, e.g. PW_ROOT=$(npm root -g)/playwright
 const require = createRequire(process.env.PW_ROOT + "/");
 const { chromium } = require("playwright");
-const SHOTS = path.join(ROOT, "docs", "screenshots");
+const SHOTS = path.join(ROOT, "docs", "screenshots", "redesign", "playthrough");
+fs.mkdirSync(SHOTS, { recursive: true });
 const URL = process.env.QA_URL;
 const games = process.argv.slice(2);
 const log = [];
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PW_EXECUTABLE_PATH ? { executablePath: process.env.PW_EXECUTABLE_PATH } : {});
 
 async function pair() {
   const ca = await browser.newContext({ viewport: { width: 820, height: 1180 } });
@@ -281,7 +283,8 @@ const strategies = {
       const p = await whoseTurn(a, b);
       if (!p) break;
       const letter = p === a ? "N" : "S"; // initials of Nanna and Sam, same on both screens
-      const mine = p.locator(`button.terr:has(.owner:text-is("${letter}"))`);
+      const mobileMap = p.viewportSize().width <= 768;
+      const mine = p.locator(mobileMap ? `button.territory-choice[data-owner-letter="${letter}"]` : `button.terr:has(.owner:text-is("${letter}"))`);
       if (await p.locator("h2:has-text('Place ')").count()) {
         await mine.first().click();
         const all = p.locator("button:has-text('Put all')");
@@ -298,7 +301,7 @@ const strategies = {
         const ready = p.locator("section.panel button.btn-primary:has-text('Attack ')");
         if (await ready.count()) { await ready.first().click(); attacked = true; }
         else if (await p.locator("text=Now tap a neighbour of").count()) {
-          const enemies = p.locator("button.terr:not(.terr-" + (p === a ? "0" : "1") + ")");
+          const enemies = p.locator(mobileMap ? `button.territory-choice:not(.terr-owner-${p === a ? "0" : "1"})` : "button.terr:not(.terr-" + (p === a ? "0" : "1") + ")");
           for (let e = 0; e < await enemies.count() && !attacked; e++) {
             await enemies.nth(e).click();
             if (await ready.count()) { await ready.first().click(); attacked = true; }
@@ -328,7 +331,20 @@ const strategies = {
       const p = await whoseTurn(a, b);
       if (!p) break;
       if (!shot && p === a) { await p.screenshot({ path: `${SHOTS}/${id}-your-turn.png`, fullPage: true }); shot = true; }
-      await p.locator("button.cell").first().click();
+      if (p.viewportSize().width <= 768) {
+        const controls = p.locator(".board-mobile .board-controls").first();
+        const row = controls.locator("select").first();
+        const col = controls.locator("select").nth(1);
+        for (const value of await row.locator("option").evaluateAll(os => os.map(o => o.value))) {
+          await row.selectOption(value);
+          const available = col.locator("option:not([disabled])");
+          if (await available.count()) {
+            await col.selectOption(await available.first().getAttribute("value"));
+            await controls.getByRole("button", { name: "Choose square", exact: true }).click();
+            break;
+          }
+        }
+      } else await p.locator("button.cell").first().click();
       await p.waitForTimeout(20);
     }
   },
