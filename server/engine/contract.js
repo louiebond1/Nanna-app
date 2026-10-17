@@ -6,7 +6,8 @@
 //   defaultSettings, normaliseSettings(input) -> settings | { error }
 //   createGame(settings, players, seed) -> state      players: [{ seat, name }]
 //   legalActions(state, seat) -> [{ type, label, ...payload }]
-//   applyAction(state, seat, action) -> { state, events } | { error }
+//   applyAction(state, seat, action) -> { state, events, reports? } | { error }
+//     reports (optional) are saved to the reports table, e.g. a flagged question
 //     must not mutate the state it was given; error is plain English
 //   getPlayerView(state, seat) -> everything that seat may see, nothing more
 //   isGameOver(state) -> boolean

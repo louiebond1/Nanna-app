@@ -162,3 +162,11 @@ button.ccard { cursor: pointer; }
 .face-big { width: 8rem; flex: none; }
 .qa-list { list-style: none; padding: 0; margin: 0; }
 .qa-list li { padding: var(--gap-small) 0; border-bottom: 1px solid var(--border); }
+
+/* Look & Remember */
+.scene { width: 100%; max-width: 32rem; margin: 0 auto; display: block; border: 3px solid var(--border); border-radius: var(--radius); }
+.scene-hidden { display: flex; align-items: center; justify-content: center; aspect-ratio: 1; max-width: 32rem; margin: 0 auto;
+  border: 3px dashed var(--border); border-radius: var(--radius); font-size: var(--text-large); font-weight: 700; text-align: center; padding: var(--gap); }
+.timer { font-size: var(--text-huge); font-weight: 800; text-align: center; }
+.answer-right { outline: 5px solid var(--good); }
+.answer-wrong { outline: 5px dashed var(--bad); }

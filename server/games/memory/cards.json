@@ -1,0 +1,258 @@
+{
+  "format": "Look & Remember content pack v1. Each card: id, title, sky (day|night), items (kind, colour, x, y in a 0-100 box, optional text), and exactly 6 questions. Question types: count {kind}, colour {kind} (needs exactly one of that kind), has {kind}, text {kind} (sign word, door number, clock time), sky. Answers are computed from the items, never typed in.",
+  "kinds": ["apple", "ball", "balloon", "bird", "boat", "car", "cat", "clock", "cup", "fish", "flower", "house", "sign", "star", "tree", "umbrella"],
+  "colours": ["red", "blue", "yellow", "green", "purple", "orange", "pink", "brown", "white", "black"],
+  "cards": [
+    {
+      "id": "park", "title": "In the park", "sky": "day",
+      "items": [
+        { "kind": "tree", "colour": "green", "x": 12, "y": 50 },
+        { "kind": "tree", "colour": "green", "x": 85, "y": 48 },
+        { "kind": "bird", "colour": "blue", "x": 30, "y": 15 },
+        { "kind": "bird", "colour": "blue", "x": 45, "y": 10 },
+        { "kind": "bird", "colour": "blue", "x": 60, "y": 18 },
+        { "kind": "ball", "colour": "red", "x": 50, "y": 80 },
+        { "kind": "sign", "colour": "white", "x": 70, "y": 75, "text": "PARK" },
+        { "kind": "flower", "colour": "yellow", "x": 30, "y": 85 }
+      ],
+      "questions": [
+        { "type": "count", "kind": "bird" },
+        { "type": "colour", "kind": "ball" },
+        { "type": "text", "kind": "sign" },
+        { "type": "count", "kind": "tree" },
+        { "type": "has", "kind": "cat" },
+        { "type": "colour", "kind": "flower" }
+      ]
+    },
+    {
+      "id": "kitchen", "title": "Tea time", "sky": "day",
+      "items": [
+        { "kind": "cup", "colour": "blue", "x": 20, "y": 70 },
+        { "kind": "cup", "colour": "blue", "x": 40, "y": 70 },
+        { "kind": "cup", "colour": "pink", "x": 60, "y": 70 },
+        { "kind": "clock", "colour": "white", "x": 50, "y": 20, "text": "4:00" },
+        { "kind": "apple", "colour": "green", "x": 80, "y": 72 },
+        { "kind": "apple", "colour": "green", "x": 88, "y": 80 },
+        { "kind": "cat", "colour": "orange", "x": 15, "y": 30 }
+      ],
+      "questions": [
+        { "type": "count", "kind": "cup" },
+        { "type": "text", "kind": "clock" },
+        { "type": "colour", "kind": "cat" },
+        { "type": "count", "kind": "apple" },
+        { "type": "has", "kind": "fish" },
+        { "type": "sky" }
+      ]
+    },
+    {
+      "id": "harbour", "title": "At the harbour", "sky": "day",
+      "items": [
+        { "kind": "boat", "colour": "red", "x": 25, "y": 60 },
+        { "kind": "boat", "colour": "yellow", "x": 70, "y": 65 },
+        { "kind": "fish", "colour": "orange", "x": 40, "y": 88 },
+        { "kind": "fish", "colour": "orange", "x": 55, "y": 85 },
+        { "kind": "fish", "colour": "orange", "x": 70, "y": 90 },
+        { "kind": "fish", "colour": "orange", "x": 85, "y": 86 },
+        { "kind": "bird", "colour": "white", "x": 50, "y": 15 },
+        { "kind": "house", "colour": "blue", "x": 85, "y": 30, "text": "7" }
+      ],
+      "questions": [
+        { "type": "count", "kind": "fish" },
+        { "type": "count", "kind": "boat" },
+        { "type": "text", "kind": "house" },
+        { "type": "colour", "kind": "house" },
+        { "type": "colour", "kind": "bird" },
+        { "type": "has", "kind": "umbrella" }
+      ]
+    },
+    {
+      "id": "night-street", "title": "A street at night", "sky": "night",
+      "items": [
+        { "kind": "house", "colour": "red", "x": 20, "y": 50, "text": "12" },
+        { "kind": "house", "colour": "green", "x": 55, "y": 50, "text": "14" },
+        { "kind": "star", "colour": "yellow", "x": 15, "y": 10 },
+        { "kind": "star", "colour": "yellow", "x": 40, "y": 15 },
+        { "kind": "star", "colour": "yellow", "x": 70, "y": 8 },
+        { "kind": "star", "colour": "yellow", "x": 88, "y": 18 },
+        { "kind": "star", "colour": "yellow", "x": 55, "y": 22 },
+        { "kind": "car", "colour": "blue", "x": 80, "y": 82 },
+        { "kind": "cat", "colour": "black", "x": 38, "y": 85 }
+      ],
+      "questions": [
+        { "type": "count", "kind": "star" },
+        { "type": "count", "kind": "house" },
+        { "type": "colour", "kind": "car" },
+        { "type": "colour", "kind": "cat" },
+        { "type": "sky" },
+        { "type": "has", "kind": "balloon" }
+      ]
+    },
+    {
+      "id": "party", "title": "Birthday party", "sky": "day",
+      "items": [
+        { "kind": "balloon", "colour": "red", "x": 15, "y": 20 },
+        { "kind": "balloon", "colour": "blue", "x": 30, "y": 15 },
+        { "kind": "balloon", "colour": "yellow", "x": 45, "y": 22 },
+        { "kind": "balloon", "colour": "green", "x": 60, "y": 14 },
+        { "kind": "sign", "colour": "white", "x": 80, "y": 25, "text": "HAPPY" },
+        { "kind": "cup", "colour": "purple", "x": 30, "y": 75 },
+        { "kind": "apple", "colour": "red", "x": 55, "y": 78 },
+        { "kind": "clock", "colour": "white", "x": 80, "y": 70, "text": "2:30" }
+      ],
+      "questions": [
+        { "type": "count", "kind": "balloon" },
+        { "type": "text", "kind": "sign" },
+        { "type": "text", "kind": "clock" },
+        { "type": "colour", "kind": "cup" },
+        { "type": "colour", "kind": "apple" },
+        { "type": "has", "kind": "bird" }
+      ]
+    },
+    {
+      "id": "garden", "title": "Nanna's garden", "sky": "day",
+      "items": [
+        { "kind": "flower", "colour": "red", "x": 10, "y": 80 },
+        { "kind": "flower", "colour": "red", "x": 22, "y": 84 },
+        { "kind": "flower", "colour": "purple", "x": 34, "y": 80 },
+        { "kind": "flower", "colour": "red", "x": 46, "y": 85 },
+        { "kind": "flower", "colour": "purple", "x": 58, "y": 80 },
+        { "kind": "tree", "colour": "green", "x": 80, "y": 45 },
+        { "kind": "bird", "colour": "brown", "x": 75, "y": 12 },
+        { "kind": "umbrella", "colour": "yellow", "x": 35, "y": 40 }
+      ],
+      "questions": [
+        { "type": "count", "kind": "flower" },
+        { "type": "colour", "kind": "umbrella" },
+        { "type": "colour", "kind": "bird" },
+        { "type": "has", "kind": "tree" },
+        { "type": "has", "kind": "cat" },
+        { "type": "count", "kind": "tree" }
+      ]
+    },
+    {
+      "id": "seaside", "title": "By the sea", "sky": "day",
+      "items": [
+        { "kind": "umbrella", "colour": "red", "x": 20, "y": 60 },
+        { "kind": "umbrella", "colour": "blue", "x": 50, "y": 62 },
+        { "kind": "umbrella", "colour": "red", "x": 80, "y": 58 },
+        { "kind": "ball", "colour": "yellow", "x": 35, "y": 85 },
+        { "kind": "boat", "colour": "white", "x": 70, "y": 25 },
+        { "kind": "bird", "colour": "white", "x": 20, "y": 12 },
+        { "kind": "bird", "colour": "white", "x": 32, "y": 18 },
+        { "kind": "sign", "colour": "white", "x": 88, "y": 85, "text": "ICES" }
+      ],
+      "questions": [
+        { "type": "count", "kind": "umbrella" },
+        { "type": "colour", "kind": "ball" },
+        { "type": "text", "kind": "sign" },
+        { "type": "count", "kind": "bird" },
+        { "type": "colour", "kind": "boat" },
+        { "type": "has", "kind": "fish" }
+      ]
+    },
+    {
+      "id": "toyshop", "title": "The toy shop", "sky": "day",
+      "items": [
+        { "kind": "car", "colour": "red", "x": 15, "y": 30 },
+        { "kind": "car", "colour": "green", "x": 40, "y": 30 },
+        { "kind": "car", "colour": "yellow", "x": 65, "y": 30 },
+        { "kind": "ball", "colour": "blue", "x": 20, "y": 75 },
+        { "kind": "ball", "colour": "blue", "x": 40, "y": 78 },
+        { "kind": "boat", "colour": "orange", "x": 65, "y": 75 },
+        { "kind": "sign", "colour": "white", "x": 85, "y": 60, "text": "TOYS" },
+        { "kind": "clock", "colour": "white", "x": 88, "y": 15, "text": "9:15" }
+      ],
+      "questions": [
+        { "type": "count", "kind": "car" },
+        { "type": "count", "kind": "ball" },
+        { "type": "colour", "kind": "boat" },
+        { "type": "text", "kind": "clock" },
+        { "type": "text", "kind": "sign" },
+        { "type": "has", "kind": "balloon" }
+      ]
+    },
+    {
+      "id": "farm", "title": "On the farm", "sky": "day",
+      "items": [
+        { "kind": "house", "colour": "red", "x": 25, "y": 45, "text": "3" },
+        { "kind": "tree", "colour": "green", "x": 70, "y": 45 },
+        { "kind": "apple", "colour": "red", "x": 62, "y": 40 },
+        { "kind": "apple", "colour": "red", "x": 75, "y": 35 },
+        { "kind": "apple", "colour": "red", "x": 78, "y": 48 },
+        { "kind": "cat", "colour": "white", "x": 45, "y": 85 },
+        { "kind": "bird", "colour": "black", "x": 50, "y": 12 },
+        { "kind": "car", "colour": "blue", "x": 85, "y": 85 }
+      ],
+      "questions": [
+        { "type": "count", "kind": "apple" },
+        { "type": "text", "kind": "house" },
+        { "type": "colour", "kind": "cat" },
+        { "type": "colour", "kind": "car" },
+        { "type": "colour", "kind": "house" },
+        { "type": "has", "kind": "boat" }
+      ]
+    },
+    {
+      "id": "pond", "title": "The duck pond", "sky": "day",
+      "items": [
+        { "kind": "fish", "colour": "orange", "x": 30, "y": 80 },
+        { "kind": "fish", "colour": "yellow", "x": 50, "y": 85 },
+        { "kind": "bird", "colour": "yellow", "x": 25, "y": 55 },
+        { "kind": "bird", "colour": "yellow", "x": 45, "y": 58 },
+        { "kind": "bird", "colour": "yellow", "x": 65, "y": 55 },
+        { "kind": "bird", "colour": "yellow", "x": 80, "y": 60 },
+        { "kind": "tree", "colour": "green", "x": 85, "y": 25 },
+        { "kind": "sign", "colour": "white", "x": 15, "y": 25, "text": "DUCKS" }
+      ],
+      "questions": [
+        { "type": "count", "kind": "bird" },
+        { "type": "count", "kind": "fish" },
+        { "type": "text", "kind": "sign" },
+        { "type": "has", "kind": "umbrella" },
+        { "type": "has", "kind": "tree" },
+        { "type": "sky" }
+      ]
+    },
+    {
+      "id": "station", "title": "The station", "sky": "day",
+      "items": [
+        { "kind": "clock", "colour": "white", "x": 50, "y": 15, "text": "10:45" },
+        { "kind": "sign", "colour": "white", "x": 20, "y": 30, "text": "TRAINS" },
+        { "kind": "umbrella", "colour": "black", "x": 30, "y": 70 },
+        { "kind": "umbrella", "colour": "black", "x": 70, "y": 70 },
+        { "kind": "cup", "colour": "white", "x": 85, "y": 40 },
+        { "kind": "car", "colour": "black", "x": 50, "y": 88 },
+        { "kind": "balloon", "colour": "red", "x": 80, "y": 15 }
+      ],
+      "questions": [
+        { "type": "text", "kind": "clock" },
+        { "type": "text", "kind": "sign" },
+        { "type": "count", "kind": "umbrella" },
+        { "type": "colour", "kind": "balloon" },
+        { "type": "colour", "kind": "car" },
+        { "type": "has", "kind": "cat" }
+      ]
+    },
+    {
+      "id": "campfire", "title": "Camping out", "sky": "night",
+      "items": [
+        { "kind": "tree", "colour": "green", "x": 10, "y": 45 },
+        { "kind": "tree", "colour": "green", "x": 30, "y": 42 },
+        { "kind": "tree", "colour": "green", "x": 90, "y": 45 },
+        { "kind": "star", "colour": "white", "x": 50, "y": 10 },
+        { "kind": "star", "colour": "white", "x": 65, "y": 18 },
+        { "kind": "star", "colour": "white", "x": 78, "y": 8 },
+        { "kind": "cup", "colour": "red", "x": 55, "y": 82 },
+        { "kind": "cat", "colour": "brown", "x": 75, "y": 85 }
+      ],
+      "questions": [
+        { "type": "count", "kind": "tree" },
+        { "type": "count", "kind": "star" },
+        { "type": "colour", "kind": "cup" },
+        { "type": "colour", "kind": "cat" },
+        { "type": "sky" },
+        { "type": "has", "kind": "car" }
+      ]
+    }
+  ]
+}

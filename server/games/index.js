@@ -12,6 +12,7 @@ const GAMES = [
   require("./wheel"),
   require("./grid"),
   require("./whoswho"),
+  require("./memory"),
 ];
 
 function createRegistry(engines = GAMES) {

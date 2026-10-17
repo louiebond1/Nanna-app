@@ -208,6 +208,7 @@ class RoomService {
       if (match.outcome) {
         this.store.saveResult(roomId, match.gameId, room.seats.map((s) => s.name), match.outcome, this.now());
       }
+      for (const report of outcome.reports || []) this.store.saveReport(roomId, report, this.now());
     });
     this.changed(roomId);
     return result;

@@ -172,6 +172,6 @@ test("migrations run once and are recorded", () => {
   makeService(file).store.close();
   const { store } = makeService(file);
   const rows = store.db.prepare("SELECT version FROM schema_migrations").all();
-  assert.deepEqual(rows.map((r) => r.version), [1]);
+  assert.deepEqual(rows.map((r) => r.version), [1, 2]);
   store.close();
 });

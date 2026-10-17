@@ -32,6 +32,13 @@ const MIGRATIONS = [
      outcome TEXT NOT NULL
    );
    CREATE INDEX results_room ON results(room_id, finished_at);`,
+  // 2: things players report from inside a game, e.g. a flagged question.
+  `CREATE TABLE reports(
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     room_id TEXT NOT NULL,
+     created_at INTEGER NOT NULL,
+     report TEXT NOT NULL
+   );`,
 ];
 
 const ROOM_TTL_MS = 60 * 24 * 60 * 60 * 1000; // idle rooms kept 60 days
@@ -114,6 +121,15 @@ class Store {
     this.db
       .prepare("INSERT INTO results(room_id, game_id, finished_at, players, outcome) VALUES(?,?,?,?,?)")
       .run(roomId, gameId, now, JSON.stringify(players), JSON.stringify(outcome));
+  }
+
+  saveReport(roomId, report, now = Date.now()) {
+    this.db.prepare("INSERT INTO reports(room_id, created_at, report) VALUES(?,?,?)").run(roomId, now, JSON.stringify(report));
+  }
+
+  reports() {
+    return this.db.prepare("SELECT room_id, created_at, report FROM reports ORDER BY id").all()
+      .map((r) => ({ roomId: r.room_id, createdAt: r.created_at, ...JSON.parse(r.report) }));
   }
 
   recentResults(roomId, limit = 10) {

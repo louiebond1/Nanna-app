@@ -11,8 +11,9 @@ import * as gin from "./gin.js";
 import * as wheel from "./wheel.js";
 import * as grid from "./grid.js";
 import * as whoswho from "./whoswho.js";
+import * as memory from "./memory.js";
 
-const screens = { gofish, fleet, clash, cheat, gin, wheel, grid, whoswho };
+const screens = { gofish, fleet, clash, cheat, gin, wheel, grid, whoswho, memory };
 
 export function screenFor(gameId) {
   return screens[gameId] || generic;
