@@ -3,6 +3,7 @@ import { createRequire } from "module";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import { installWorkspaceNavigation } from './workspace-navigation.mjs';
 import { fileURLToPath } from "url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -17,9 +18,10 @@ const log = [];
 const browser = await chromium.launch(process.env.PW_EXECUTABLE_PATH ? { executablePath: process.env.PW_EXECUTABLE_PATH } : {});
 
 async function pair() {
-  const ca = await browser.newContext({ viewport: { width: 820, height: 1180 } });
-  const cb = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const ca = await browser.newContext({ viewport: { width: 820, height: 1180 }, reducedMotion: 'reduce' });
+  const cb = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
   const a = await ca.newPage(), b = await cb.newPage();
+  installWorkspaceNavigation(a);
   for (const [n, p] of [["tablet", a], ["phone", b]]) {
     p.on("pageerror", (e) => log.push(`FAIL ${n} page error: ${e.message}`));
     p.on("console", (m) => m.type() === "error" && log.push(`FAIL ${n} console: ${m.text()}`));
@@ -205,7 +207,7 @@ const strategies = {
       const up = p.locator("button.face:not(.down)");
       const askable = p.locator(".panel button.btn-block:has-text('?')");
       if ((await up.count()) === 1 || !(await askable.count())) {
-        await p.click("text=I know who it is: make a guess");
+        await p.locator('button[aria-label="I know who it is: make a guess"]').click();
         await p.locator("button.face:not(.down)").first().click();
         await p.locator("dialog button.btn-primary").click();
       } else {
@@ -332,7 +334,7 @@ const strategies = {
       if (!p) break;
       if (!shot && p === a) { await p.screenshot({ path: `${SHOTS}/${id}-your-turn.png`, fullPage: true }); shot = true; }
       if (p.viewportSize().width <= 768) {
-        const controls = p.locator(".board-mobile .board-controls").first();
+        const controls = p.locator(".fleet-coordinate-actions").first();
         const row = controls.locator("select").first();
         const col = controls.locator("select").nth(1);
         for (const value of await row.locator("option").evaluateAll(os => os.map(o => o.value))) {
@@ -351,6 +353,7 @@ const strategies = {
 };
 
 for (const id of games) {
+  console.log(`Starting ${id}`);
   const { a, b, close } = await pair();
   const title = { gofish: "Go Fish", fleet: "Fleet Finder", clash: "Colour Clash", cheat: "Cheat", gin: "Gin Rummy", wheel: "Letter Wheel", grid: "Word Grid", whoswho: "Who's Who", memory: "Look & Remember", canasta: "Canasta", islands: "Island Conquest" }[id] || id;
   try {
@@ -367,7 +370,7 @@ for (const id of games) {
     }
     log.push(`OK ${id}: played to the end through the UI on tablet + phone, results shown, rematch started`);
   } catch (e) {
-    log.push(`FAIL ${id}: ${e.message.split("\n")[0]}`);
+    log.push(`FAIL ${id}: ${e.message}`);
     await a.screenshot({ path: path.join(os.tmpdir(), `qa-fail-${id}-a.png`), fullPage: true });
     await b.screenshot({ path: path.join(os.tmpdir(), `qa-fail-${id}-b.png`), fullPage: true });
   }

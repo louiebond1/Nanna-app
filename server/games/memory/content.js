@@ -5,6 +5,7 @@ const path = require("path");
 const fs = require("fs");
 
 const pack = JSON.parse(fs.readFileSync(path.join(__dirname, "cards.json"), "utf8"));
+const { countries } = require('./countries');
 const NAMES = { apple: "apples", ball: "balls", balloon: "balloons", bird: "birds", boat: "boats", car: "cars", cat: "cats", clock: "clocks", cup: "cups", fish: "fish", flower: "flowers", house: "houses", sign: "signs", star: "stars", tree: "trees", umbrella: "umbrellas" };
 const TEXT_Q = { sign: "What word was on the sign?", house: "What number was on the house door?", clock: "What time did the clock show?" };
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
@@ -23,6 +24,12 @@ function resolve(card, q) {
     return opts.sort((a, b) => (/^\d+$/.test(a) && /^\d+$/.test(b) ? a - b : a.localeCompare(b)));
   };
   switch (q.type) {
+    case "country": {
+      const value = card.country[q.field];
+      const answer = q.field === 'shirt' ? cap(value) : String(value);
+      const pool = q.field === 'birds' ? ['1', '2', '3', '4'] : countries.map(c => q.field === 'shirt' ? cap(c.country[q.field]) : c.country[q.field]);
+      return { text: q.text, answer, options: pick(answer, pool) };
+    }
     case "count": {
       const n = of(q.kind).length;
       return { text: `How many ${NAMES[q.kind]} were there?`, answer: String(n), options: pick(n, [n - 1, n + 1, n + 2, n - 2, n + 3].filter((x) => x >= 0)) };
@@ -49,6 +56,7 @@ function resolve(card, q) {
   }
 }
 
-const CARDS = pack.cards.map((card) => ({ ...card, resolved: card.questions.map((q) => resolve(card, q)) }));
+// Keep old card IDs resolvable for games already saved before the countries update.
+const CARDS = [...pack.cards, ...countries].map((card) => ({ ...card, resolved: card.questions.map((q) => resolve(card, q)) }));
 
 module.exports = { pack, CARDS, resolve };

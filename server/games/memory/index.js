@@ -11,8 +11,8 @@ const byId = Object.fromEntries(CARDS.map((c) => [c.id, c]));
 const engine = {
   id: "memory",
   title: "Look & Remember",
-  blurb: "Study a picture, then answer a question about it from memory.",
-  defaultSettings: { studySeconds: 20, cardsEach: 5 },
+  blurb: "Explore illustrated country cards, then answer from memory.",
+  defaultSettings: { studySeconds: 0, cardsEach: 5 },
   settingsOptions: {
     studySeconds: {
       label: "Time to study each picture",
@@ -39,7 +39,7 @@ const engine = {
       names: players.map((p) => p.name),
       studySeconds: settings.studySeconds,
       rounds: settings.cardsEach * 2,
-      deck: rng.shuffle(r, CARDS.map((c) => c.id)).slice(0, settings.cardsEach * 2),
+      deck: rng.shuffle(r, CARDS.filter(c => c.country).map((c) => c.id)).slice(0, settings.cardsEach * 2),
       round: 0,
       active: rng.int(r, 2),
       phase: "study",     // study -> question -> reveal -> study ... -> over
@@ -132,8 +132,9 @@ const engine = {
       points: state.points,
       prompt: { study: "study the picture.", question: "answer from memory.", reveal: "see how you did, then carry on." }[state.phase],
       title: card.title,
+      theme: card.country ? 'countries' : 'scenes',
       // The picture is hidden while the question is being answered.
-      card: state.phase === "question" ? null : { sky: card.sky, items: card.items },
+      card: state.phase === "question" ? null : { sky: card.sky, items: card.items, ...(card.country ? { country: card.country } : {}) },
       die: state.die,
       question: q ? { text: q.text, options: q.options } : null,
       answer: state.phase === "reveal" ? q.answer : null,

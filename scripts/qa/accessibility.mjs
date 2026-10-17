@@ -2,6 +2,7 @@ import { createRequire } from "module";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import { installWorkspaceNavigation } from './workspace-navigation.mjs';
 import { fileURLToPath } from "url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -34,6 +35,7 @@ for (const scheme of ["light", "dark"]) {
   const ca = await browser.newContext({ viewport: { width: 820, height: 1180 }, colorScheme: scheme, bypassCSP: true });
   const cb = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: scheme, bypassCSP: true });
   const a = await ca.newPage(), b = await cb.newPage();
+  installWorkspaceNavigation(a);
   await a.goto(URL); await scan(a, `${scheme} home`);
   await a.fill("#name", "Nanna"); await a.click("text=Start a room"); await a.waitForSelector(".code");
   await scan(a, `${scheme} lobby`);

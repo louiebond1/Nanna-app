@@ -45,7 +45,7 @@ test("a round: study, the dice picks an existing question, answer, reveal", () =
   let s = g.createGame({ studySeconds: 20, cardsEach: 3 }, players, "x");
   const a = s.active;
   assert.match(g.applyAction(s, 1 - a, { type: "doneStudying" }).error, /turn/);
-  assert.ok(g.getPlayerView(s, a).card.items.length > 0);
+  assert.ok(g.getPlayerView(s, a).card.country.capital);
   s = act(s, a, { type: "doneStudying" }).state;
   assert.ok(s.die >= 1 && s.die <= 6);
   const v = g.getPlayerView(s, a);
@@ -59,6 +59,31 @@ test("a round: study, the dice picks an existing question, answer, reveal", () =
   s = act(s, 1 - a, { type: "next" }).state;
   assert.equal(s.active, 1 - a, "players take turns");
   assert.equal(s.phase, "study");
+});
+
+test("new decks use only country cards, all questions refer to visible fields", () => {
+  for (let seed = 0; seed < 20; seed++) {
+    const s = g.createGame({ studySeconds: 0, cardsEach: 5 }, players, `countries-${seed}`);
+    assert.equal(s.deck.length, 10);
+    assert.equal(new Set(s.deck).size, 10);
+    for (const id of s.deck) {
+      const card = CARDS.find(c => c.id === id);
+      assert.ok(card.country, id);
+      for (const [i, q] of card.questions.entries()) {
+        const shown = String(card.country[q.field]);
+        assert.equal(card.resolved[i].answer.toLowerCase(), shown.toLowerCase());
+      }
+    }
+  }
+});
+
+test("saved scene games remain playable after the country pack update", () => {
+  let s = g.createGame({ studySeconds: 0, cardsEach: 3 }, players, 'old-game');
+  s.deck[0] = 'park';
+  assert.ok(g.getPlayerView(s, s.active).card.items.length);
+  s = act(s, s.active, { type: 'doneStudying' }).state;
+  assert.equal(g.getPlayerView(s, s.active).card, null);
+  assert.ok(g.getPlayerView(s, s.active).question.text);
 });
 
 test("the dice never picks a missing question across many rolls", () => {

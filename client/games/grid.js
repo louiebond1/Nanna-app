@@ -49,7 +49,7 @@ export function render(match, { send, components: { h, bigButton, ruleHelp, conf
   return h("div", { class: "stack" },
     grid,
     h("div", { class: "word-entry", "aria-live": "polite", "aria-label": "Word so far" }, current.toUpperCase() || "…"),
-    hint ? h("p", { class: "alert", role: "status" }, hint) : null,
+    hint ? h("p", { class: "alert", role: "status", "data-local-error": true, ondismiss: () => { hint = ""; redraw(); } }, hint) : null,
     h("div", { class: "row" },
       bigButton("Enter word", () => submit(current), { primary: true, disabled: !current }),
       bigButton("Delete letter", () => { path.pop(); hint = ""; redraw(); }, { disabled: !path.length }),
