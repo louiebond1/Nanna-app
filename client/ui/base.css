@@ -89,3 +89,29 @@ details summary { min-height: var(--tap-min); display: flex; align-items: center
   * { transition: none !important; animation: none !important; }
   .card[aria-pressed="true"] { transform: none; }
 }
+
+.board {
+  display: grid;
+  grid-template-columns: 1.4rem repeat(var(--size), minmax(0, 1fr));
+  gap: 3px;
+  max-width: 34rem;
+  width: 100%;
+}
+.board-head { display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; }
+.cell {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit; font-weight: 800; font-size: 1.2rem;
+  padding: 0;
+}
+button.cell { cursor: pointer; }
+.cell-water { background: var(--sea, #d8ecfa); }
+.cell-ship { background: var(--ship, #5c6670); color: #fff; }
+.cell-hit { background: var(--bad); color: #fff; }
+.cell-sunk { background: #3b0d0b; color: #fff; }
+.cell-miss { background: var(--surface); color: var(--text-muted); }
+.cell-preview { outline: 3px dashed var(--focus); outline-offset: -3px; }

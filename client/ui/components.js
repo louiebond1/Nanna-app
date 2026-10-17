@@ -88,3 +88,26 @@ export function confirmDialog(message, { confirmLabel = "Yes", cancelLabel = "No
     dlg.showModal();
   });
 }
+
+// Square board with row letters and column numbers. cells[r][c] is a state
+// name; `look` maps it to { symbol, text, cls }. onclick(r, c) makes squares
+// buttons; canClick(r, c) can switch individual squares off.
+export function board(cells, { look, onclick, canClick = () => true, label }) {
+  const size = cells.length;
+  const rows = "ABCDEFGHIJ";
+  const grid = h("div", { class: "board", role: "group", "aria-label": label });
+  grid.style.setProperty("--size", size); // CSP forbids style attributes; the CSSOM is fine
+  grid.append(h("span", { class: "board-head", "aria-hidden": "true" }));
+  for (let c = 0; c < size; c++) grid.append(h("span", { class: "board-head", "aria-hidden": "true" }, String(c + 1)));
+  for (let r = 0; r < size; r++) {
+    grid.append(h("span", { class: "board-head", "aria-hidden": "true" }, rows[r]));
+    for (let c = 0; c < size; c++) {
+      const { symbol = "", text, cls = "" } = look(cells[r][c], r, c);
+      const name = `${rows[r]}${c + 1}: ${text}`;
+      grid.append(onclick && canClick(r, c)
+        ? h("button", { type: "button", class: `cell ${cls}`, "aria-label": name, onclick: () => onclick(r, c) }, symbol)
+        : h("span", { class: `cell ${cls}`, role: "img", "aria-label": name }, symbol));
+    }
+  }
+  return grid;
+}

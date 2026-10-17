@@ -5,6 +5,7 @@ const { assertEngine } = require("../engine/contract");
 
 const GAMES = [
   require("./gofish"),
+  require("./fleet"),
 ];
 
 function createRegistry(engines = GAMES) {

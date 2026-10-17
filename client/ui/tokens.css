@@ -26,6 +26,8 @@
   --focus: #ff9f1c;
   --card-red: #b0201a;
   --card-black: #111111;
+  --sea: #d8ecfa;
+  --ship: #5c6670;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,5 +44,7 @@
     --warn-bg: #4a3d00;
     --card-red: #ff7b72;
     --card-black: #f4f4f4;
+    --sea: #17344d;
+    --ship: #8c96a0;
   }
 }

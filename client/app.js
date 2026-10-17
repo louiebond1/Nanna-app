@@ -35,12 +35,13 @@ const inviteId = () => new URLSearchParams(location.hash.slice(1)).get("join");
 
 // Runs a server call, showing its error (if any) in plain English.
 async function attempt(fn) {
-  if (busy) return;
+  if (busy) return { error: null };
   busy = true;
   try {
     const res = await fn();
     message = res && res.error ? res.error : null;
     if (res && res.ok && inviteId()) history.replaceState(null, "", location.pathname);
+    return res;
   } finally {
     busy = false;
     draw();
@@ -180,6 +181,7 @@ function gameScreen() {
   const other = state.players[1 - state.you];
   const send = (move) => attempt(() => conn.sendMove(move));
   send.redraw = draw; // screens call this after a local-only change (e.g. selecting a card)
+  // send() resolves with the server's answer ({ ok } or { error }).
   const screen = screenFor(match.gameId);
   return h("div", { class: "stack" },
     h("h1", {}, match.title),
