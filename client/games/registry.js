@@ -7,8 +7,9 @@ import * as gofish from "./gofish.js";
 import * as fleet from "./fleet.js";
 import * as clash from "./clash.js";
 import * as cheat from "./cheat.js";
+import * as gin from "./gin.js";
 
-const screens = { gofish, fleet, clash, cheat };
+const screens = { gofish, fleet, clash, cheat, gin };
 
 export function screenFor(gameId) {
   return screens[gameId] || generic;

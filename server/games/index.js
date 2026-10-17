@@ -8,6 +8,7 @@ const GAMES = [
   require("./fleet"),
   require("./clash"),
   require("./cheat"),
+  require("./gin"),
 ];
 
 function createRegistry(engines = GAMES) {
