@@ -32,3 +32,7 @@ For local QA only, an empty **temporary** blocked list was supplied and the exis
 Recover the intended dictionary and blocked list from the existing build/deployment, then explicitly track those assets (or provide an equivalent reproducible build) as a separate backend/deployment fix. Do not replace the intended blocked list with the temporary empty local file. This visual branch is prepared for review rather than pushed to `main`, which would trigger Railway.
 
 Real iPhone/iPad hardware, Safari, VoiceOver and testing with Nanna have not been performed. Automated Chromium phone/tablet emulation is the available device evidence. A physical-device and VoiceOver pass is still needed.
+
+## Deployment follow-up
+
+The missing dictionary assets are now explicitly tracked and the runtime-only data ignore rule is anchored to `/data/`. The lists were rebuilt with the existing SCOWL builder and dependency lock, using a newly supplied conservative exclusion list for explicit language. The previously intended blocked list could not be recovered; this is a replacement, not a claim to preserve its exact word filtering. No game engine, networking or saved-data code changed.
