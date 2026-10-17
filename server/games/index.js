@@ -9,6 +9,7 @@ const GAMES = [
   require("./clash"),
   require("./cheat"),
   require("./gin"),
+  require("./wheel"),
 ];
 
 function createRegistry(engines = GAMES) {

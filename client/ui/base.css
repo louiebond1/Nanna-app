@@ -133,3 +133,13 @@ button.ccard { cursor: pointer; }
 .cc-wild { background: #111; color: #fff; }
 .ccard.not-playable { opacity: 0.55; }
 .ccard.playable { outline: 4px solid var(--focus); outline-offset: 2px; }
+
+/* Letter Wheel: 2-3-2 layout around a highlighted middle letter. */
+.wheel { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+.wheel .row { justify-content: center; gap: 0.6rem; }
+.tile { width: 4.2rem; height: 4.2rem; border-radius: 50%; font-size: var(--text-huge); }
+.tile-centre { background: var(--accent); color: var(--accent-text); border-color: var(--accent); border-width: 5px; }
+.tile:disabled { opacity: 0.35; }
+.word-entry { font-size: var(--text-huge); font-weight: 800; letter-spacing: 0.15em; min-height: 3rem; text-align: center; }
+.word-list { columns: 2; padding-left: 1.2rem; }
+@media (min-width: 40rem) { .word-list { columns: 3; } }
