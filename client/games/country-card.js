@@ -72,15 +72,15 @@ function food(id) {
 }
 export function countryCard(c) {
   const svg=e('svg',{viewBox:'0 0 360 390',class:'scene country-card',role:'img','aria-label':`${c.name} study card. Study the illustration and labels.`},
-    r(0,0,360,390,'#fff8e8',{rx:14}),r(0,70,360,197,'#d9e9e2'),p('M0 204 Q42 168 95 191 Q172 212 200 169 Q253 138 360 185 L360 267 L0 267 Z','#adcda4'),p('M0 234 Q96 214 180 242 Q273 255 360 220 L360 267 L0 267 Z','#8cbec5'),
+    r(0,0,360,390,'#f9f5e9',{rx:18}),r(0,70,360,197,'#d9e9e2'),p('M0 204 Q42 168 95 191 Q172 212 200 169 Q253 138 360 185 L360 267 L0 267 Z','#adcda4'),p('M0 234 Q96 214 180 242 Q273 255 360 220 L360 267 L0 267 Z','#8cbec5'),
     t(16,44,c.name,c.name.length>9?28:34,{'font-family':'Georgia, serif'}),flag(c));
   for(let i=0;i<c.birds;i++) svg.append(p(`M${20+i*32} 94 q7 -9 14 0 q7 -9 14 0`,'none',{stroke:'#294b55','stroke-width':2.5}));
   svg.append(e('g',{transform:'translate(26 107) scale(.78)'},landmark(c.id)));
   const shirt={blue:'#2b63b4',red:'#c84743',yellow:'#f1bb35',green:'#2b8460'}[c.shirt];
-  svg.append(e('g',{transform:'translate(278 155)'},e('circle',{cx:0,cy:0,r:17,fill:'#c88d64'}),p('M-16 -5 Q-20 -28 0 -24 Q20 -27 18 -5 Z','#4e392e'),p('M-17 24 Q0 12 17 24 L24 60 L-24 60 Z',shirt),line(-22,31,-34,51,'#c88d64',8),line(22,31,34,15,'#c88d64',8),line(-9,62,-15,92,'#28465e',10),line(9,62,15,92,'#28465e',10),e('circle',{cx:-6,cy:0,r:2,fill:'#193c43'}),e('circle',{cx:6,cy:0,r:2,fill:'#193c43'}),p('M-6 9 Q0 14 6 9','none',{stroke:'#6b3b31','stroke-width':2})));
-  svg.append(t(14,250,c.landmark,24));
-  svg.append(t(16,293,'Capital',23,{'font-weight':500,fill:'#526e6b'}),t(112,293,c.capital,24));
-  svg.append(t(16,331,'Food',23,{'font-weight':500,fill:'#526e6b'}),t(100,331,c.food,24),food(c.id));
-  svg.append(t(16,369,c.water,24),line(16,344,344,344,'#d5dbcb',1));
+  svg.append(e('g',{transform:'translate(278 155) scale(.8)'},e('circle',{cx:0,cy:0,r:17,fill:'#c88d64'}),p('M-16 -5 Q-20 -28 0 -24 Q20 -27 18 -5 Z','#4e392e'),p('M-17 24 Q0 12 17 24 L24 60 L-24 60 Z',shirt),line(-22,31,-34,51,'#c88d64',8),line(22,31,34,15,'#c88d64',8),line(-9,62,-15,92,'#28465e',10),line(9,62,15,92,'#28465e',10),e('circle',{cx:-6,cy:0,r:2,fill:'#193c43'}),e('circle',{cx:6,cy:0,r:2,fill:'#193c43'}),p('M-6 9 Q0 14 6 9','none',{stroke:'#6b3b31','stroke-width':2})));
+  svg.append(r(10,228,210,33,'#f9f5e9',{rx:7,opacity:.94}),t(20,251,c.landmark,20,{'font-family':'Georgia, serif'}));
+  svg.append(t(18,294,'CAPITAL',12,{'font-weight':700,fill:'#647c78','letter-spacing':2}),t(125,295,c.capital,23,{'font-family':'Georgia, serif'}));
+  svg.append(t(18,331,'FOOD',12,{'font-weight':700,fill:'#647c78','letter-spacing':2}),t(125,333,c.food,23,{'font-family':'Georgia, serif'}),food(c.id));
+  svg.append(line(18,346,342,346,'#d5dbcb',1),t(18,372,c.water,19,{'font-family':'Georgia, serif'}));
   return svg;
 }
