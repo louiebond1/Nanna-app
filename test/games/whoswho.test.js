@@ -12,10 +12,10 @@ function make(wrongGuess = "lose") {
 }
 const act = (s, seat, a) => g.applyAction(s, seat, a);
 
-test("24 characters, every one can be told apart by the questions", () => {
-  assert.equal(CHARACTERS.length, 24);
+test("30 characters, every one can be told apart by the questions", () => {
+  assert.equal(CHARACTERS.length, 30);
   const sigs = new Set(CHARACTERS.map((c) => QUESTIONS.map((q) => (q.test(c) ? 1 : 0)).join("")));
-  assert.equal(sigs.size, 24);
+  assert.equal(sigs.size, 30);
 });
 
 test("secrets are two different people", () => {
@@ -60,9 +60,24 @@ test("flip down everyone who doesn't match an answer", () => {
   let s = act(make(), 0, { type: "ask", questionId: "glasses" }).state; // yes
   assert.match(act(s, 0, { type: "flipNonMatching", questionId: "hat" }).error, /haven't asked/);
   s = act(s, 0, { type: "flipNonMatching", questionId: "glasses" }).state;
-  const up = CHARACTERS.filter((c) => !s.down[0].includes(c.id));
+  const up = g.getPlayerView(s, 0).characters.filter((c) => !s.down[0].includes(c.id));
   assert.ok(up.every((c) => c.glasses));
   assert.ok(up.some((c) => c.id === "felix"));
+});
+
+test('new illustrated roster preserves secret answers and legacy saved games', () => {
+  const legacy = make();
+  assert.equal(g.getPlayerView(legacy, 0).characters.length, 24);
+  const current = g.createGame({wrongGuess:'lose'}, [{name:'A'},{name:'B'}], 'illustrated');
+  assert.equal(g.getPlayerView(current,0).characters.length,30);
+  assert.equal(new Set(CHARACTERS.map(c => c.artIndex)).size,30);
+  for(const secret of CHARACTERS) for(const question of QUESTIONS) {
+    const state={...current,secret:[secret.id,secret.id],turn:0};
+    const asked=act(state,0,{type:'ask',questionId:question.id}).state;
+    assert.equal(asked.asked.at(-1).answer,!!question.test(secret));
+    const flipped=act(asked,0,{type:'flipNonMatching',questionId:question.id}).state;
+    assert.equal(flipped.down[0].includes(secret.id),false);
+  }
 });
 
 test("right guess wins", () => {

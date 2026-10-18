@@ -51,7 +51,7 @@ for (const [width, height] of sizes) for (const scheme of ['light', 'dark']) {
   await b.fill('#join-name', 'Sam');
   await b.getByRole('button', { name: 'Join the game', exact: true }).click();
   await b.waitForSelector('text=Choose a game');
-  const titles = await a.locator('.game-choice-title').allTextContents();
+  const titles = (await a.locator('.game-choice-title').allTextContents()).filter(t=>!process.env.QA_TITLES||JSON.parse(process.env.QA_TITLES).includes(t.replace(/^✓ /, '').replace(/ \(chosen\)$/, '')));
   for (const title of titles) {
     const clean = title.replace(/^✓ /, '').replace(/ \(chosen\)$/, '');
     await a.getByRole('button', { name: new RegExp(clean.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) }).first().click();

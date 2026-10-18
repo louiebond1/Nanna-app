@@ -70,7 +70,39 @@ function food(id) {
   }
   return g;
 }
+function paintedCountry(c) {
+  const card = document.createElement('section');
+  card.className = 'scene country-card painted-country-card';
+  card.setAttribute('aria-label', `${c.name} study card`);
+  const heading = document.createElement('h2'); heading.textContent = c.name;
+  heading.className = 'painted-heading';
+  const picture = document.createElement('button'); picture.type = 'button';
+  picture.className = 'painted-art-button'; picture.setAttribute('aria-label', `Enlarge the ${c.name} picture`);
+  const image = document.createElement('img'); image.src = c.art;
+  image.alt = `${c.name}: study the landmark, food, visitor and pigeons.`;
+  image.decoding = 'async'; picture.append(image);
+  picture.addEventListener('click', () => {
+    const dialog = document.createElement('dialog'); dialog.className = 'country-picture-dialog';
+    dialog.setAttribute('aria-label', `${c.name} enlarged picture`);
+    const title = document.createElement('h2'); title.textContent = c.name;
+    const large = document.createElement('img'); large.src = c.art; large.alt = image.alt;
+    const close = document.createElement('button'); close.type = 'button'; close.className = 'btn btn-primary'; close.textContent = 'Back to the card';
+    close.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => dialog.remove());
+    dialog.append(title,large,close); document.body.append(dialog); dialog.showModal();
+  });
+  const captions = document.createElement('div'); captions.className = 'painted-captions';
+  for (const [label,value] of [['Capital',c.capital],['Food',c.food],['Animal',c.animal],['Did you know?',c.funFact]]) {
+    const line = document.createElement('p');
+    const key = document.createElement('strong'); key.textContent = `${label}: `;
+    line.append(key,document.createTextNode(value)); captions.append(line);
+  }
+  card.append(heading,picture,captions);
+  return card;
+}
+
 export function countryCard(c) {
+  if (c.art) return paintedCountry(c);
   const svg=e('svg',{viewBox:'0 0 360 390',class:'scene country-card',role:'img','aria-label':`${c.name} study card. Study the illustration and labels.`},
     r(0,0,360,390,'#f9f5e9',{rx:18}),r(0,70,360,197,'#d9e9e2'),p('M0 204 Q42 168 95 191 Q172 212 200 169 Q253 138 360 185 L360 267 L0 267 Z','#adcda4'),p('M0 234 Q96 214 180 242 Q273 255 360 220 L360 267 L0 267 Z','#8cbec5'),
     t(16,44,c.name,c.name.length>9?28:34,{'font-family':'Georgia, serif'}),flag(c));

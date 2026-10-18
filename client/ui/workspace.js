@@ -144,7 +144,7 @@ function flowUnits(source) {
   const units = [];
   const visit = (node, trail = []) => {
     if (!(node instanceof HTMLElement) && !(node instanceof SVGElement)) return;
-    const atomic = node.matches('button, p, h1, h2, h3, li, form, svg, input, select, label, .card, .ccard, .dice, .wheel, .lettergrid, .word-entry, .board, .map, .face-big, .field, .character-board');
+    const atomic = node.matches('button, p, h1, h2, h3, li, form, svg, input, select, label, .card, .ccard, .dice, .wheel, .lettergrid, .word-entry, .board, .map, .face-big, .field, .character-board, .painted-country-card');
     if (atomic || !node.children.length || (node.querySelector(':scope > label') && node.querySelector(':scope > input, :scope > select'))) {
       units.push({ node, trail }); return;
     }

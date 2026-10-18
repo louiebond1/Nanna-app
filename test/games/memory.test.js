@@ -86,6 +86,27 @@ test("saved scene games remain playable after the country pack update", () => {
   assert.ok(g.getPlayerView(s, s.active).question.text);
 });
 
+test('illustrated cards have visible factual captions and a matching six-question set', () => {
+  const {existsSync} = require('node:fs');
+  const path = require('node:path');
+  const cards=CARDS.filter(c=>c.country?.art);
+  assert.equal(cards.length,12);
+  for(const card of cards) {
+    assert.ok(existsSync(path.join(__dirname,'../../client',card.country.art)),card.id);
+    assert.ok(card.country.capital && card.country.food && card.country.animal && card.country.funFact);
+    assert.ok(card.country.funFact.toLowerCase().includes(card.country.factAnswer.toLowerCase()),card.id);
+    assert.deepEqual(card.questions.map(q=>q.field),['capital','food','animal','factAnswer','shirt','birds']);
+    assert.equal(card.sources.length,2);
+  }
+  const s=g.createGame({studySeconds:0,cardsEach:5},players,'captions');
+  assert.ok(s.deck.every(id=>id.startsWith('facts-country-')));
+  const q=act(s,s.active,{type:'doneStudying'}).state;
+  const view=g.getPlayerView(q,q.active);
+  assert.equal(view.card,null);
+  assert.equal(view.answer,null);
+  assert.equal(view.title,null);
+});
+
 test("the dice never picks a missing question across many rolls", () => {
   const seen = new Set();
   for (let i = 0; i < 300; i++) {

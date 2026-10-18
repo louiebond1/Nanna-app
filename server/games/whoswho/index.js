@@ -2,11 +2,14 @@
 // Who's Who: a Guess Who-style deduction game. Rules: docs/rules/whoswho.md
 const rng = require("../../engine/rng");
 const { jsonState } = require("../../engine/contract");
-const { CHARACTERS, QUESTIONS } = require("./characters");
+const { CHARACTERS, LEGACY_CHARACTERS, QUESTIONS } = require("./characters");
 
 const clone = jsonState.restore;
 const other = (seat) => 1 - seat;
 const byId = Object.fromEntries(CHARACTERS.map((c) => [c.id, c]));
+const legacyById = Object.fromEntries(LEGACY_CHARACTERS.map(c => [c.id,c]));
+const roster = state => state.rosterVersion === 2 ? CHARACTERS : LEGACY_CHARACTERS;
+const people = state => state.rosterVersion === 2 ? byId : legacyById;
 const qById = Object.fromEntries(QUESTIONS.map((q) => [q.id, q]));
 
 const engine = {
@@ -31,6 +34,7 @@ const engine = {
     const r = rng.create(seed);
     const order = rng.shuffle(r, CHARACTERS.map((c) => c.id));
     return {
+      rosterVersion: 2,
       names: players.map((p) => p.name),
       wrongGuess: settings.wrongGuess,
       secret: [order[0], order[1]],   // secret[seat] is the person that seat is hiding
@@ -51,7 +55,7 @@ const engine = {
     if (state.turn !== seat) return out;
     const askedByMe = new Set(state.asked.filter((a) => a.seat === seat).map((a) => a.questionId));
     for (const q of QUESTIONS) if (!askedByMe.has(q.id)) out.push({ type: "ask", questionId: q.id, label: `Ask: ${q.text}` });
-    for (const c of CHARACTERS) {
+    for (const c of roster(state)) {
       if (!state.down[seat].includes(c.id) && !state.wrongGuesses[seat].includes(c.id)) {
         out.push({ type: "guess", characterId: c.id, label: `Guess it's ${c.name}` });
       }
@@ -68,7 +72,7 @@ const engine = {
 
     if (action.type === "flip") {
       const id = action.characterId;
-      if (!byId[id]) return { error: "That person isn't on the board." };
+      if (!people(state)[id]) return { error: "That person isn't on the board." };
       const down = state.down[seat];
       state.down[seat] = down.includes(id) ? down.filter((x) => x !== id) : [...down, id];
       return { state, events: [] };
@@ -78,7 +82,7 @@ const engine = {
       const a = state.asked.find((x) => x.seat === seat && x.questionId === action.questionId);
       if (!a) return { error: "You haven't asked that question yet." };
       const q = qById[a.questionId];
-      const toFlip = CHARACTERS.filter((c) => q.test(c) !== a.answer).map((c) => c.id);
+      const toFlip = roster(state).filter((c) => q.test(c) !== a.answer).map((c) => c.id);
       state.down[seat] = [...new Set([...state.down[seat], ...toFlip])];
       return { state, events: [] };
     }
@@ -88,7 +92,7 @@ const engine = {
     if (action.type === "ask") {
       const q = qById[action.questionId];
       if (!q) return { error: "Choose one of the questions." };
-      const answer = !!q.test(byId[state.secret[opp]]);
+      const answer = !!q.test(people(state)[state.secret[opp]]);
       state.asked.push({ seat, questionId: q.id, answer });
       state.turn = opp;
       return {
@@ -102,7 +106,7 @@ const engine = {
     }
 
     if (action.type === "guess") {
-      const c = byId[action.characterId];
+      const c = people(state)[action.characterId];
       if (!c) return { error: "Choose a person to guess." };
       if (state.secret[opp] === c.id) {
         state.phase = "over";
@@ -131,7 +135,7 @@ const engine = {
       phase: state.phase,
       turn: state.turn,
       prompt: "ask a question, or guess who they are.",
-      characters: CHARACTERS,
+      characters: roster(state),
       questions: QUESTIONS.map(({ id, text }) => ({ id, text })),
       yourPerson: state.secret[seat],
       theirPerson: over ? state.secret[opp] : null,

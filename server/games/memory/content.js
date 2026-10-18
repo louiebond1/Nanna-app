@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs");
 
 const pack = JSON.parse(fs.readFileSync(path.join(__dirname, "cards.json"), "utf8"));
-const { countries } = require('./countries');
+const { countries, illustratedCountries } = require('./countries');
 const NAMES = { apple: "apples", ball: "balls", balloon: "balloons", bird: "birds", boat: "boats", car: "cars", cat: "cats", clock: "clocks", cup: "cups", fish: "fish", flower: "flowers", house: "houses", sign: "signs", star: "stars", tree: "trees", umbrella: "umbrellas" };
 const TEXT_Q = { sign: "What word was on the sign?", house: "What number was on the house door?", clock: "What time did the clock show?" };
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
@@ -27,7 +27,7 @@ function resolve(card, q) {
     case "country": {
       const value = card.country[q.field];
       const answer = q.field === 'shirt' ? cap(value) : String(value);
-      const pool = q.field === 'birds' ? ['1', '2', '3', '4'] : countries.map(c => q.field === 'shirt' ? cap(c.country[q.field]) : c.country[q.field]);
+      const pool = q.options || (q.field === 'birds' ? ['1', '2', '3', '4'] : [...countries,...illustratedCountries].map(c => c.country[q.field]).filter(v => v != null).map(v => q.field === 'shirt' ? cap(v) : v));
       return { text: q.text, answer, options: pick(answer, pool) };
     }
     case "count": {
@@ -57,6 +57,6 @@ function resolve(card, q) {
 }
 
 // Keep old card IDs resolvable for games already saved before the countries update.
-const CARDS = [...pack.cards, ...countries].map((card) => ({ ...card, resolved: card.questions.map((q) => resolve(card, q)) }));
+const CARDS = [...pack.cards, ...countries, ...illustratedCountries].map((card) => ({ ...card, resolved: card.questions.map((q) => resolve(card, q)) }));
 
 module.exports = { pack, CARDS, resolve };
