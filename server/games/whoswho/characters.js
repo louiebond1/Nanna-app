@@ -5,7 +5,7 @@
 const C = (id, name, hair, long, glasses, hat, beard, moustache, earrings, smiling, skin, colour) =>
   ({ id, name, hair, long, glasses, hat, beard, moustache, earrings, smiling, skin, colour });
 
-const CHARACTERS = [
+const LEGACY_CHARACTERS = [
   C("ada", "Ada", "grey", true, true, false, false, false, true, true, 1, "#7b4fa0"),
   C("bertie", "Bert", "none", false, true, false, true, true, false, true, 2, "#2f6f9f"),
   C("cleo", "Cleo", "black", true, false, true, false, false, true, false, 4, "#c0392b"),
@@ -32,6 +32,18 @@ const CHARACTERS = [
   C("zara", "Zara", "brown", true, false, true, false, false, false, true, 4, "#ca6f1e"),
 ];
 
+// Painted atlas inspected against these traits. Saved 24-person matches keep
+// their original roster; new games use all 30 illustrated people.
+const CHARACTERS = [
+  ...LEGACY_CHARACTERS.map(c => ({...c, ...(['hamish','umar'].includes(c.id) ? {moustache:true} : {})})),
+  C("alex", "Alex", "ginger", false, true, false, false, false, true, false, 1, "#2b65a2"),
+  C("bea", "Bea", "black", false, true, false, false, false, true, true, 2, "#ae4148"),
+  C("finn", "Finn", "brown", false, false, false, false, false, false, false, 1, "#f4eee2"),
+  C("grace", "Grace", "grey", true, true, true, false, false, true, true, 1, "#dcb942"),
+  C("leo", "Leo", "blonde", false, true, true, false, false, false, true, 4, "#2a64a0"),
+  C("maya", "Maya", "ginger", false, false, false, false, false, true, false, 3, "#37639a"),
+].map((c, artIndex) => ({...c, artIndex}));
+
 // Every question is answered by the server from the secret person's features.
 const QUESTIONS = [
   { id: "glasses", text: "Do they wear glasses?", test: (c) => c.glasses },
@@ -49,4 +61,4 @@ const QUESTIONS = [
   { id: "grey", text: "Do they have grey hair?", test: (c) => c.hair === "grey" },
 ];
 
-module.exports = { CHARACTERS, QUESTIONS };
+module.exports = { CHARACTERS, LEGACY_CHARACTERS, QUESTIONS };

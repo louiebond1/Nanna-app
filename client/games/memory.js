@@ -50,6 +50,7 @@ function stopTimer() { if (timer) clearInterval(timer); timer = null; }
 
 export function render(match, { send, players, you, components: { h, bigButton, dice, ruleHelp } }) {
   const v = match.view;
+  if (v.phase === 'question') document.querySelectorAll('.country-picture-dialog').forEach(dialog => { dialog.close(); dialog.remove(); });
   const activeName = v.active === you ? "You" : players[v.active]?.name || "The other player";
   const mine = v.active === you;
   const key = `${match.version}`;

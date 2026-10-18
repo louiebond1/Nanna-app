@@ -5,7 +5,14 @@ const hair={black:'#20232b',brown:'#70432c',blonde:'#f4c34e',ginger:'#c65b2f',gr
 function e(tag,attrs,...kids){const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))n.setAttribute(k,v);for(const k of kids.flat())if(k)n.append(k);return n;}
 const p=(d,fill,attrs={})=>e('path',{d,fill,...attrs});
 const circle=(cx,cy,r,fill,attrs={})=>e('circle',{cx,cy,r,fill,...attrs});
+let portraitSerial = 0;
 export function portrait(c){
+ if (Number.isInteger(c.artIndex)) {
+  const clip = `portrait-clip-${++portraitSerial}`;
+  return e('svg',{viewBox:'0 0 100 100','aria-hidden':'true'},
+   e('defs',{},e('clipPath',{id:clip},e('rect',{width:100,height:100}))),
+   e('g',{'clip-path':`url(#${clip})`},e('image',{href:'/assets/illustrated/characters-30.png',x:-(c.artIndex%6)*100,y:-Math.floor(c.artIndex/6)*100,width:600,height:500,preserveAspectRatio:'none'})));
+ }
  const seed=[...c.id].reduce((a,x)=>a+x.charCodeAt(0),0),v=seed%3;
  const h=hair[c.hair],s=skin[c.skin],eye=['#4b7b81','#765839','#4e8064'][seed%3];
  const svg=e('svg',{viewBox:'0 0 100 106','aria-hidden':'true'},e('rect',{width:100,height:106,rx:12,fill:['#f5e4c8','#e3e8e6','#e9dfec'][v]}));

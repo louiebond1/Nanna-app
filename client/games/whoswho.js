@@ -68,7 +68,7 @@ export function render(match, { send, players, you, components: { h, bigButton, 
           disabled: guessing && (down.has(c.id) || wrong.has(c.id)),
           onclick: () => tapFace(c),
         }, faceSvg(c), h("span", { class: "face-name" }, c.name))))),
-    h("p", {}, `${oppName} has flipped down ${v.theirDownCount} of 24.`),
+    h("p", {}, `${oppName} has flipped down ${v.theirDownCount} of ${v.characters.length}.`),
     ruleHelp("How to play Who's Who", [
       "You each have a secret person. Take turns asking one yes-or-no question about the other player's person. The app answers truthfully for them.",
       "Flip down faces that can't be the answer. Your board is private. “Flip down everyone who doesn't match” does it for you.",

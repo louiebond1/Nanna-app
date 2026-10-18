@@ -39,7 +39,7 @@ const engine = {
       names: players.map((p) => p.name),
       studySeconds: settings.studySeconds,
       rounds: settings.cardsEach * 2,
-      deck: rng.shuffle(r, CARDS.filter(c => c.country).map((c) => c.id)).slice(0, settings.cardsEach * 2),
+      deck: rng.shuffle(r, CARDS.filter(c => c.country?.art).map((c) => c.id)).slice(0, settings.cardsEach * 2),
       round: 0,
       active: rng.int(r, 2),
       phase: "study",     // study -> question -> reveal -> study ... -> over
@@ -131,7 +131,7 @@ const engine = {
       studySeconds: state.studySeconds,
       points: state.points,
       prompt: { study: "study the picture.", question: "answer from memory.", reveal: "see how you did, then carry on." }[state.phase],
-      title: card.title,
+      title: state.phase === 'question' ? null : card.title,
       theme: card.country ? 'countries' : 'scenes',
       // The picture is hidden while the question is being answered.
       card: state.phase === "question" ? null : { sky: card.sky, items: card.items, ...(card.country ? { country: card.country } : {}) },

@@ -74,6 +74,8 @@ export function gameWorkspace(raw, match, { banner, error, menu }) {
     case 'whoswho': {
       const board = find('.faces');
       board.classList.add('character-board');
+      board.style.setProperty('--portrait-rows', Math.ceil(match.view.characters.length / 5));
+      board.style.setProperty('--portrait-wide-rows', Math.ceil(match.view.characters.length / 6));
       const faces = board.parentElement;
       faces.querySelector('h2')?.remove();
       const questions = all.find(e => e.querySelector('button') && !e.contains(faces) && !e.querySelector('.qa-list'));
@@ -84,10 +86,10 @@ export function gameWorkspace(raw, match, { banner, error, menu }) {
       if (match.yourTurn && !guessing) actions.push(h('button', { type: 'button', class: 'btn', onclick: event => {
         const select = event.currentTarget.closest('.workspace').querySelector('.workspace-view');
         select.value = 'questions'; select.dispatchEvent(new Event('change'));
-      } }, 'Ask a question'));
+      }, 'aria-label': 'Ask a question' }, 'Ask'));
       if (questions) takeButtons(questions, b => /make a guess|Cancel guessing/.test(b.textContent));
       const guessButton = actions.find(b => /make a guess/.test(b.textContent));
-      if (guessButton) { guessButton.textContent = 'Make a guess'; guessButton.setAttribute('aria-label', 'I know who it is: make a guess'); }
+      if (guessButton) { guessButton.textContent = 'Guess'; guessButton.setAttribute('aria-label', 'I know who it is: make a guess'); }
       extra.push(view('faces', 'Your board', ...(main.includes(faces) ? [] : [faces])),
         view('questions', 'Questions', ...(main.includes(questions) ? [] : [questions])),
         view('answers', 'Answers', ...(main.includes(answers) ? [] : [answers])));
@@ -167,5 +169,6 @@ export function gameWorkspace(raw, match, { banner, error, menu }) {
   const result = workspace({ key: signature, title: match.gameId === 'memory' && match.view.theme === 'countries' ? 'Countries' : match.title, banner, description, error, groups, actions,
     actionViews: match.gameId === 'islands' ? ['play', 'map'] : undefined });
   result.classList.add(`game-${match.gameId}`);
+  if (match.gameId === 'memory') result.dataset.memoryPhase = match.view.phase;
   return result;
 }
